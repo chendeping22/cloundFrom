@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>深圳市医学影像数据地图</title>
+		<link rel="stylesheet" href="css/map.css" />
+		<link rel="stylesheet" href="css/swiper-4.2.0.min.css" />
+	</head>
+
+	<body>
+		<div class="container22">
+			<header></header>
+			<main>
+				<!--第一部分；轮播表格-->
+				<div class="dataPlay">
+
+					<div class="head">
+						<span>医院名称</span>
+						<span>实时检查量</span>
+						<span>累计检查量</span>
+					</div>
+
+					<div class="listContainer">
+						<div class="swiper-container">
+							<div class="swiper-wrapper">
+								<div class="swiper-slide">
+									<ul class="list front">
+										<script type="text/html" id="dataList">
+											{{each}}
+											<li>
+												<span>{{$value.name}}</span>
+												<span>{{+$value.currentStudyNumber}}</span>
+												<span>{{$value.allStudyNumber}}</span>
+											</li>
+											{{/each}}
+										</script>
+									</ul>
+								</div>
+								
+								<div class="swiper-slide">
+									<ul class="list front"></ul>
+								</div>
+
+								
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+				<!--第二部分 空白处-->
+				<div class="distance"></div>
+				<!--第三部分 地图-->
+				<div class="map">
+					<div class="locationContainer">
+						<script type="text/html" id="location">
+							{{each}}
+							{{if $value.showLevel=="80"}}
+							<span class="levelOne" title="{{$value.name}}" style="{{$value.style}}">
+								<div class="container">  
+								    <div class="dot"></div>  
+								    <div class="pulse"></div>  
+								</div>  
+							</span>
+							{{else if $value.showLevel=="70"}}
+							<span class="levelTwo" title="{{$value.name}}" style="{{$value.style}}">
+								<div class="container">  
+								    <div class="dot"></div>  
+								    <div class="pulse"></div>  
+								</div>  
+							</span>
+							{{else if $value.showLevel=="60"}}
+							<span class="levelThree" title="{{$value.name}}" style="{{$value.style}}">
+								<div class="container">  
+								    <div class="dot"></div>  
+								    <div class="pulse"></div>  
+								</div>  
+							</span>
+							{{else if $value.showLevel=="50"}}
+							<span class="levelFour" title="{{$value.name}}" style="{{$value.style}}">
+								<div class="container">  
+								    <div class="dot"></div>  
+								    <div class="pulse"></div>  
+								</div>  
+							</span>
+							{{else}}
+							<span class="levelFive" title="{{$value.name}}" style="{{$value.style}}">
+								<div class="container">  
+								    <div class="dot"></div>  
+								    <div class="pulse"></div>  
+								</div>  
+							</span>
+							{{/if}}
+							
+							{{/each}}
+						</script>
+					</div>
+				</div>
+			</main>
+			<footer>蓝网科技提供技术支持</footer>
+		</div>
+
+		<script src="js/jquery-3.2.1.min.js"></script>
+		<script src="js/template-web.js"></script>
+		<script src="js/swiper-4.2.0.min.js"></script>
+		<script src="js/map.js"></script>
+	</body>
+
+</html>
+
+<style>  
+
+</style>  

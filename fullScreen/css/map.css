@@ -1,0 +1,285 @@
+html,body{
+	width: 100%;
+	height:100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+body{
+	background: url("../img/bg.jpg") no-repeat;
+	background-size:100% 100%;  
+}
+.container22{
+	width:100%;
+	height:100%;
+	/*display: flex;*/
+	/*flex-direction: column;*/
+	
+}
+header{
+	width:40%;
+	height: 15%;
+	margin: 0 auto;
+	background: url('../img/maptop2.png') no-repeat center top;
+	background-size:contain; 
+}
+main{
+	width:100%;
+	/*flex:1;*/
+	height: 85%;
+}
+main .dataPlay{
+	height: 35%;
+	width:65%;
+	margin: 0 auto;
+	padding: 1% 5%;
+	background: url('../img/boxbg.png') no-repeat center;
+	background-size:100% 100%;
+	overflow: hidden; 
+}
+
+.dataPlay .head{
+	color:#29b9d6;
+	height: 20%;
+	width:100%;
+	border-bottom: 2px dashed #29b9d6;
+	display:table; 
+}
+.dataPlay span{
+	width:33%;
+	height: 100%;
+	display:table-cell;
+	vertical-align:middle
+	
+}
+.dataPlay .head span{
+	font-size: 18px;
+	font-weight: 700;
+
+}
+
+.dataPlay .listContainer{
+	height: 80%;
+	color:#29b9d6;
+}
+.swiper-container {
+    width: 100%;
+    height: 100%;
+}
+
+.dataPlay .listContainer ul{
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	
+}
+
+.dataPlay .listContainer ul li{
+	height: 18%;
+	width:100%;
+	border-bottom: 1px dashed #29b9d6;
+	box-sizing: border-box;	
+	vertical-align: middle;
+	display:table; 
+}
+
+main .distance{
+	height: 6%;
+	width:100%;
+}
+
+main .map{
+	height: 55%;
+	width:92%;
+	margin: 0 auto;
+	/*background: url('../img/map.png') no-repeat center top;*/
+	/*background-size:contain;*/  
+	 
+}
+.map .locationContainer{
+	width:92vw;
+	height: 24.7vw;
+	position: relative;
+	background: url('../img/map.png') no-repeat center top;
+	background-size:contain; 
+}
+.map span{
+	position: absolute;
+	display: inline-block;
+	border-radius: 50%;
+	width: 20px;
+	height: 16px;
+}
+
+footer{
+	position: fixed;
+	bottom: 10px;
+	width: 100%;
+	text-align: center;
+	color: #238493;
+	z-index: 99;
+}
+
+/*.map .little{
+	width: 20px;
+	height: 16px;
+	background: url("../img/icon-yellow1.png") no-repeat center;	
+}
+
+.map .big{	
+	width: 34px;
+	height: 26px;
+	background: url("../img/icon-yellow2.png") no-repeat center;
+}*/
+
+
+/*散点样式------------------------------*/
+
+@keyframes warn {  
+    0% {  
+        transform: scale(0);  
+        opacity: 0.0;  
+    }  
+    25% {  
+        transform: scale(0);  
+        opacity: 0.1;  
+    }  
+    50% {  
+        transform: scale(0.1);  
+        opacity: 0.3;  
+    }  
+    75% {  
+        transform: scale(0.5);  
+        opacity: 0.5;  
+    }  
+    100% {  
+        transform: scale(1);  
+        opacity: 0.0;  
+    }  
+}  
+@-webkit-keyframes "warn" {  
+    0% {  
+        -webkit-transform: scale(0);  
+        opacity: 0.0;  
+    }  
+    25% {  
+        -webkit-transform: scale(0);  
+        opacity: 0.1;  
+    }  
+    50% {  
+        -webkit-transform: scale(0.1);  
+        opacity: 0.3;  
+    }  
+    75% {  
+        -webkit-transform: scale(0.5);  
+        opacity: 0.5;  
+    }  
+    100% {  
+        -webkit-transform: scale(1);  
+        opacity: 0.0;  
+    }  
+}  
+  
+.container {  
+    position: relative;  
+    width: 100%;
+    height: 100%;
+}  
+/* 保持大小不变的小圆圈  */  
+.dot {  
+    position: absolute;
+    left: 50%;
+    top: 50%;   
+    -webkit-border-radius: 50%;  
+    -moz-border-radius: 50%;  
+    background: rgba(244, 199, 21,1);
+    border-radius: 50%;   
+    z-index: 2;  
+}  
+/* 产生动画（向外扩散变大）的圆圈  */  
+.pulse {  
+    position: absolute;  
+    left: 50%;
+    top: 50%;  
+   	background: rgba(244, 199, 21,1);
+    -webkit-border-radius: 50%;  
+    -moz-border-radius: 50%;  
+    border-radius: 50%;  
+    z-index: 1;  
+    opacity: 0;  
+    -webkit-animation: warn 1.5s ease-out;  
+    -moz-animation: warn 1.5s ease-out;  
+    animation: warn 1.5s ease-out;  
+    -webkit-animation-iteration-count: infinite;  
+    -moz-animation-iteration-count: infinite;  
+    animation-iteration-count: infinite;  
+} 
+
+
+.map span.levelOne .dot{
+	width: 18px;  
+    height: 12px;  
+    margin-left: -9px;
+    margin-top: -6px;
+}
+.levelOne .pulse{
+	width: 54px;   
+    height: 36px;  
+    margin-left: -27px;
+    margin-top: -18px;
+}
+
+.levelTwo .dot{
+	width: 15px;  
+    height: 10px;  
+    margin-left: -7.5px;
+    margin-top: -5px;
+}
+.levelTwo .pulse{
+	width: 44px;   
+    height: 28px;  
+    margin-left: -22px;
+    margin-top: -14px;
+}
+
+
+.levelThree .dot{
+	width: 12px;  
+    height: 8px;  
+    margin-left: -6px;
+    margin-top: -4px;
+}
+.levelThree .pulse{
+	width: 36px;   
+    height: 24px;  
+    margin-left: -18px;
+    margin-top: -12px;
+}
+
+.levelFour .dot{
+	width: 10px;  
+    height: 7px;  
+    margin-left: -5px;
+    margin-top: -3.5px;
+}
+.levelFour .pulse{
+	width: 28px;   
+    height: 18px;  
+    margin-left: -14px;
+    margin-top: -9px;
+}
+
+
+.levelFive .dot{
+	width:6px;  
+    height:4px;  
+    margin-left: -3px;
+    margin-top: -2px;
+}
+.levelFive .pulse{
+	width: 20px;   
+    height: 14px;  
+    margin-left: -10px;
+    margin-top: -7px;
+}

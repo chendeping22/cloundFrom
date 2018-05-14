@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>蓝网医学影像数据分析</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"> 
+		<link rel="stylesheet" href="css/animation.css">
+		<link rel="stylesheet" type="text/css" href="css/main.css"/>
+		<script src="js/layout.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="header">
+			<img src="img/logo.png"/><strong>蓝网医学影像数据分析</strong><span id="time"></span>
+		</div>
+		<div></div>
+		<div id="main">
+			<div class="item">
+				<ul class="medic-arr">
+					<li>
+						<dl>
+							<dt>区域会诊中心</dt>
+							<dd id="NumConsultation">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>区域质控中心</dt>
+							<dd id="NumQuality">6个</dd> 
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>接入机构数量</dt> 
+							<dd id="NumOrg">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>医生数量</dt>
+							<dd id="NumDoctor">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>会诊量</dt>
+							<dd class="icon2" id="NumOfCon">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>质控量</dt>
+							<dd class="icon2" id="NumOfQuality">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>存储使用量</dt>
+							<dd class="icon2" id="NumUse">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>检查量</dt>
+							<dd class="icon2" id="NumExam">6个</dd>
+						</dl>
+					</li> 
+					<li>
+						<dl>
+							<dt>云胶片调阅量</dt>
+							<dd id="NumConsult">6个</dd>
+						</dl>
+					</li>
+					<li>
+						<dl>
+							<dt>云胶片发放量</dt>
+							<dd id="NumGrant">6个</dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+			<div class="item">
+				<h1 class="item-title">【会诊量趋势】</h1>
+				<div id="TrendOfCol">   
+				</div>
+			</div>
+			<div class="item">
+				<h1 class="item-title">【部位检查量占比】</h1>
+				<div id="checkPoint"></div>
+			</div>
+			<div class="item">
+				<h1 class="item-title">【医生职称分布】</h1>
+				<div id="doctorTitle"></div> 
+			</div>
+			<div class="item">
+				<div class="doct-item">
+					<h1 class="item-title">【医生出诊量排名】</h1>
+					<dl class="doct-list a-fadein" id="outNumber"> 
+					</dl>
+				</div>
+				<div class="doct-item">
+					<h1 class="item-title">【医生不符合率排名】</h1>
+					<dl class="doct-list doct-list2 a-fadein" id="noNumber"> 
+					</dl>
+				</div>
+			</div>
+			<div class="item">
+				<h1 class="item-title">【基础医院上传检查数量排名】</h1>
+				<ul class="hospt-list a-fadein" id="loadStudy"> 
+				</ul>
+				
+			</div>
+			<div class="item">
+				<h1 class="item-title">【签约医生数量趋势】</h1>
+				<div id="contract"></div>
+			</div>
+			<div class="item">
+				<h1 class="item-title">【检查量占比、检查设备阳性率占比】</h1>
+				<div id='amount'></div>
+				<div id='positive'></div>
+			</div>
+			<div class="item">
+				<h1 class="item-title">【按地区医生数量分布】</h1>
+				<ul class="doct-map a-fadein" id="doctorNumberArea"> 
+				</ul>
+			</div>
+		</div> 
+		<script src="js/echarts.min.js"></script>
+		<script src="js/jquery-3.2.1.min.js"></script>
+		<script src="js/config.js"></script>
+		<script src="js/index.js" type="text/javascript" charset="utf-8"></script>
+	</body>
+</html>

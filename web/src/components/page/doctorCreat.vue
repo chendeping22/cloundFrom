@@ -224,7 +224,7 @@
 				activeNames: ['1'], //折叠面板
 				hospitalId: sessionStorage.getItem("hospitalId"),
 				userList: {},
-				actionUrl: "http://122.13.2.38:8005/cloudform-authority/authority/sysUser/saveDoctors/v1.0",
+				actionUrl: this.$api.doctorCreat.actionUrl,
 				ruleForm: {
 					name: "",
 					phoneNum: "",
@@ -311,8 +311,7 @@
 			submitForm(formName) {
 				this.$refs[formName].validate(valid => {
 					if(valid) {
-						this.$axios.post('http://192.168.121.91:3030/authority/sysUser/save/v1.0', {
-//						this.$axios.post("/cloudform-authority/authority/sysUser/save/v1.0", {
+						this.$axios.post(this.$api.doctorCreat.sysUser, {
 								username: this.ruleForm.phoneNum,
 								name: this.ruleForm.name,
 								password: "123456", //密码
@@ -396,8 +395,7 @@
 			},
 			getRoles() {
 				//调用接口 获取医生角色
-				this.$axios.post("http://192.168.121.91:3030/authority/dictUtil/queryDictList/v1.0", {
-//						    this.$axios.post("/cloudform-authority/authority/dictUtil/queryDictList/v1.0", {
+				this.$axios.post(this.$api.doctorCreat.getRoles, {
 						type: "dict_title"
 					})
 					.then(res => {
@@ -411,8 +409,7 @@
 			},
 			getUserList(num) {
 				//调用接口 获取医生列表
-				this.$axios.post("http://192.168.121.91:3030/authority/sysUser/queryDoctorList/v1.0", {
-//						    this.$axios.post("/cloudform-authority/authority/sysUser/queryDoctorList/v1.0", {
+				this.$axios.post(this.$api.doctorCreat.getUserList, {
 						currentPage: num,
 						hospital: sessionStorage.getItem("hospitalId")
 					})
@@ -471,9 +468,7 @@
 				}
 			},
 			downModel() {
-				window.location.href =
-					"http://122.13.2.38:8005/cloudform-authority/authority/sysUser/downModel/v1.0?hospitalId=" +
-					this.hospitalId;
+				window.location.href =this.$api.doctorCreat.downModel+this.hospitalId;
 			},
 			makesureModify() { //确定修改
 				if(this.userList.name != "" && this.userList.username != "" && this.userList.idcard != "") {
@@ -493,9 +488,7 @@
 
 			},
 			modifyDoctorInfo() { //修改表格数据
-
-//						this.$axios.post('/cloudform-authority/authority/sysUser/update/v1.0', this.userList).then((res)=> { 
-				this.$axios.post('http://192.168.121.91:3030/authority/sysUser/update/v1.0', this.userList).then((res) => {
+				this.$axios.post(this.$api.doctorCreat.modifyDoctorInfo, this.userList).then((res)=> { 
 					if(res.data.code == "200") {
 						this.$alert(res.data.detailMessage, '提示：', {
 							confirmButtonText: '确定',
@@ -517,11 +510,9 @@
 
 			},
 			queryRemarks(username) { //查看原因
-//						this.$axios.get("/cloudform-authority/authority/sysUser/queryRemarks/v1.0",{
-				this.$axios.get("http://192.168.121.91:3030/authority/sysUser/queryRemarks/v1.0", {
+				this.$axios.get(this.$api.doctorCreat.queryRemarks,{
 						params: {
-							username,
-							"token": sessionStorage.getItem("loginToken")
+							username
 						}
 					}).then((res) => {
 						this.$alert(res.data.data, '驳回原因', {

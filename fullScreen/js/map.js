@@ -1,19 +1,17 @@
 var pageNum = 0;
 var pageNumSize;
+var token = window.location.search.substr(1).split("=")[1];
 
 var convertData = function(data, response) {
 	for(var i = 0; i < response.length; i++) {
 		for(var j = 0; j < data.length; j++) {
 			if(response[i].name == data[j].name) {
 				data[j]['showLevel'] = response[i].showLevel
-			}else{
-				console.log(response[i].name)
 			}
 		}
 	}
 	return data;
 };
-
 
 var data = [{
 		"class": "big",
@@ -110,31 +108,31 @@ var data = [{
 		"name": "深圳市罗湖区妇幼保健院",
 		"style": "top:39%;left: 43%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市罗湖区慢性病防治院",
-//		"style": "top:43%;left: 39%;"
-//	},
-//	{
-//		"class": "little",
-//		"name": "深圳市福田区慢性病防治院",
-//		"style": "top:55%;left: 29%;"
-//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市罗湖区慢性病防治院",
+	//		"style": "top:43%;left: 39%;"
+	//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市福田区慢性病防治院",
+	//		"style": "top:55%;left: 29%;"
+	//	},
 	{
 		"class": "little",
 		"name": "深圳市福田区妇幼保健院",
 		"style": "top:58%;left: 30%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市福田区中医院",
-//		"style": "top:44%;left: 30%;"
-//	},
-//	{
-//		"class": "little",
-//		"name": "深圳市福田人民医院",
-//		"style": "top:50%;left: 36%;"
-//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市福田区中医院",
+	//		"style": "top:44%;left: 30%;"
+	//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市福田人民医院",
+	//		"style": "top:50%;left: 36%;"
+	//	},
 	{
 		"class": "little",
 		"name": "深圳市福田区第二人民医院",
@@ -155,11 +153,11 @@ var data = [{
 		"name": "深圳市南山区妇幼保健院",
 		"style": "top:71%;left: 9%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市南山区慢性病医院",
-//		"style": "top:65%;left: 8%;"
-//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市南山区慢性病医院",
+	//		"style": "top:65%;left: 8%;"
+	//	},
 	{
 		"class": "little",
 		"name": "深圳市南山区西丽人民医院",
@@ -180,11 +178,11 @@ var data = [{
 		"name": "深圳市宝安区妇幼保健院",
 		"style": "top:43%;left: 15%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市宝安区慢性病医院",
-//		"style": "top:34%;left: 15%;"
-//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市宝安区慢性病医院",
+	//		"style": "top:34%;left: 15%;"
+	//	},
 	{
 		"class": "little",
 		"name": "深圳市宝安区中心医院",
@@ -230,16 +228,16 @@ var data = [{
 		"name": "深圳市龙岗区第五人民医院",
 		"style": "top:17%;left: 44%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市龙岗区坪地人民医院",
-//		"style": "top:11%;left: 60%;"
-//	},
-//	{
-//		"class": "little",
-//		"name": "深圳市龙岗区慢性病防治院",
-//		"style": "top:14%;left: 51%;"
-//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市龙岗区坪地人民医院",
+	//		"style": "top:11%;left: 60%;"
+	//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市龙岗区慢性病防治院",
+	//		"style": "top:14%;left: 51%;"
+	//	},
 	{
 		"class": "little",
 		"name": "深圳市龙岗区妇幼保健院",
@@ -275,21 +273,21 @@ var data = [{
 		"name": "深圳市龙岗区骨科医院",
 		"style": "top:13%;left: 55%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市盐田区梅沙医院",
-//		"style": "top:34%;left: 59%;"
-//	},
+	//	{
+	//		"class": "little",
+	//		"name": "深圳市盐田区梅沙医院",
+	//		"style": "top:34%;left: 59%;"
+	//	},
 	{
 		"class": "little",
 		"name": "深圳市盐田区人民医院",
 		"style": "top:46%;left: 49.5%;"
 	},
-//	{
-//		"class": "little",
-//		"name": "深圳市盐田区盐港医院",
-//		"style": "top:35%;left: 55%;"
-//	},
+	{
+		"class": "little",
+		"name": "深圳市盐田区盐港医院",
+		"style": "top:35%;left: 55%;"
+	},
 	{
 		"class": "little",
 		"name": "深圳市盐田区妇幼保健院",
@@ -343,15 +341,48 @@ var data = [{
 ];
 
 $.ajax({
-	url: "http://122.13.2.38:8005/cloudform-statistics/formStatistics/getMapStatus/v1.0",
+	url: "http://183.240.147.144:8888/cloudform-statistics/mapData/getMapStatus/v2.0?token=" + token + "&pageSize=80",
 	ansyc: "false",
 	type: "get",
 	success: function(res) {
-		console.log(res)
+		if(typeof res == "string") {
+			var res = JSON.parse(res);
+			if(res.code == "401") {
+				alert("登陆超时，返回重新登陆");
+				window.close()
+			};
+		}
 		pageNumSize = Math.ceil(data.length / 5);
-		data = convertData(data, res);
-		console.log(data)
-		var locationList = template("location", data); //按时间
+		data = convertData(data, res.data);
+		//要删除的代码start
+//		data.forEach(function(obj) {
+//			if(obj.name == "深圳市坪山区人民医院") {
+//				obj.allStudyNumber = 234539;
+//				obj.level = "5"
+//			}
+//			if(obj.name == "深圳市龙华区人民医院") {
+//				obj.allStudyNumber = 325812;
+//				obj.currentStudyNumber = 786;
+//				obj.level = "4"
+//			}
+//			if(obj.name == "深圳市第二人民医院") {
+//				obj.allStudyNumber = 379234;
+//				obj.currentStudyNumber = 1035;
+//				obj.level = "3"
+//			}
+//			if(obj.name == "北京大学深圳医院") {
+//				obj.allStudyNumber = 14687;
+//				obj.currentStudyNumber = 989;
+//				obj.level = "3"
+//			}
+//			if(obj.name == "深圳市龙华区中心医院") {
+//				obj.allStudyNumber = 388322;
+//				obj.currentStudyNumber = 653;
+//				obj.level = "2"
+//			}
+//		})
+		//要删除的代码end
+		var locationList = template("location", data);
 		$(".locationContainer").html(locationList)
 	}
 });
@@ -391,9 +422,41 @@ var swiper = new Swiper('.swiper-container', {
 
 function getData() {
 	$.ajax({
-		url: "http://122.13.2.38:8005/cloudform-statistics/formStatistics/getMapStatus/v1.0?pageNumber=" + pageNum,
-		success: function(data) {
-			var datalist = template("dataList", data); //按时间
+		url: "http://183.240.147.144:8888/cloudform-statistics/mapData/getMapStatus/v2.0?token=" + token + "&pageSize=5&page=" + pageNum,
+		success: function(res) {
+			if(typeof res == "string") {
+				var res = JSON.parse(res);
+				if(res.code == "401") {
+					alert("登陆超时，返回重新登陆");
+					window.close()
+				};
+			};
+			console.log(res.data)
+			//要删除的代码start
+//			res.data.forEach(function(obj) {
+//				if(obj.name == "深圳市坪山区人民医院") {
+//					obj.allStudyNumber = 234539;
+//				}
+//				if(obj.name == "深圳市龙华区人民医院") {
+//					obj.allStudyNumber = 325812;
+//					obj.currentStudyNumber = 786;
+//				}
+//				if(obj.name == "深圳市第二人民医院") {
+//					obj.allStudyNumber = 379234;
+//					obj.currentStudyNumber = 1035;
+//				}
+//				if(obj.name == "北京大学深圳医院") {
+//					obj.allStudyNumber = 14687;
+//					obj.currentStudyNumber = 989;
+//				}
+//				if(obj.name == "深圳市龙华区中心医院") {
+//					obj.allStudyNumber = 388322;
+//					obj.currentStudyNumber = 653;
+//				}
+//			})
+
+			//要删除的代码end
+			var datalist = template("dataList", res.data); //按时间
 			$(".ani-slide .list").html(datalist);
 		}
 	})

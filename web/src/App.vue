@@ -20,6 +20,4 @@ export default {
 	/*background-color: #f8fafd;*/
 	overflow: auto;
 }
-
- 
 </style>

@@ -133,11 +133,7 @@
 		<div class="clear"></div>
 		
 		<!--患者详情对话框-->
-		<el-dialog :visible.sync="patientDetailIsVisible" width = "70%">   
-			<div slot="title" >  
-				<span>会诊详情：</span>
-				<button type="button" aria-label="Close" class="el-dialog__headerbtn"><i class="el-dialog__close el-icon el-icon-close"></i></button>
-			</div> 
+		<el-dialog title="会诊详情" :visible.sync="patientDetailIsVisible" width = "70%">
 			<div class="title">基本信息</div>
 			<div class="baseInfo">
 				<ul>
@@ -223,11 +219,9 @@
 			         });
 					return
 				}
-				this.$axios.get("/cloudform-imgconsultation/consultation/queryConsultation/v1.0",{
+				this.$axios.get(this.$api.myPatient.queryConsultation,{
 //				this.$axios.get("http://192.168.121.91:2020/consultation/queryConsultation/v1.0",{
-					
 				    params:{
-				      "token":sessionStorage.getItem("loginToken"),
 				      "page":pageNum,
 				      "patientMobile":this.searchForm.phoneNum,
 				      "patientName":this.searchForm.name,
@@ -244,12 +238,11 @@
 				})
 			},
 			getPatientList(pageNum){
-				this.$axios.get("/cloudform-imgconsultation/consultation/myPatientList/v1.0",{
+				this.$axios.get(this.$api.myPatient.getPatientList,{
 //				this.$axios.get("http://192.168.121.91:2020/consultation/myPatientList/v1.0",{
 				    params:{
 				      "page":pageNum,
-				      "consultationSendDoctor":sessionStorage.getItem("userId"),
-				      "token":sessionStorage.getItem("loginToken")
+				      "consultationSendDoctor":sessionStorage.getItem("userId")
 			    	}
 				}).then((res)=>{
 //					console.log(res)
@@ -277,11 +270,10 @@
    				window.open(href, '_blank');
 			},
 			checkReason(consultationId){//查看退回原因
-				this.$axios.get("/cloudform-imgconsultation/consultation/queryRemarks/v1.0",{
+				this.$axios.get(this.$api.myPatient.checkReason,{
 //				this.$axios.get("http://192.168.121.91:2020/consultation/queryRemarks/v1.0",{
 				    params:{
-				      consultationId,
-					  "token":sessionStorage.getItem("loginToken")
+				      consultationId
 			    	}
 				}).then((res)=>{
 					this.$alert(res.data, '退回原因', {
@@ -296,11 +288,10 @@
 			},
 			checkDiagnose(consultationId){//查看诊断意见
 				this.diagnoseFormVisible = true;
-				this.$axios.get("/cloudform-imgconsultation/consultation/finishConsultation/v1.0", {
+				this.$axios.get(this.$api.myPatient.checkDiagnose, {
 //				this.$axios.get("http://192.168.121.91:2020/consultation/queryDiagnosticOpinion/v1.0", {
 						params:{
-							consultationId,
-							"token":sessionStorage.getItem("loginToken")
+							consultationId
 						}
 					}).then((res) => {
 						this.diagnoseForm.diagnose = res.data;
@@ -349,13 +340,12 @@
 		          cancelButtonText: '取消',
 		          type: 'warning'
 		        }).then(() => {
-			        this.$axios.get("/cloudform-imgconsultation/consultation/cancelConsultation/v1.0",{
+			        this.$axios.get(this.$api.myPatient.recallConsultation,{
 //			        this.$axios.get("http://192.168.121.91:2020/consultation/cancelConsultation/v1.0",{
 			        	
 			        	
 			        	params:{
-						"consultationId":id,
-						"token":sessionStorage.getItem("loginToken")
+						"consultationId":id
 						}
 			        }).then((res)=>{
 			        	this.getPatientList(1);
@@ -381,7 +371,7 @@
 				console.log(column); 
 			},
 			pacsView(studyUid){//阅片
-				var url  = "http://122.13.3.102:18000/clinicWebPacsViewPc/index.html#"+studyUid
+				var url  = this.$api.pacsView+studyUid
 				window.open(url,"_blank")
 			}
 		},
@@ -434,6 +424,3 @@
 	
 </style>
 
-<style>
-	
-</style>

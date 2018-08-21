@@ -1,5 +1,5 @@
 <template>
-	<div class="container">
+	<div class="container leader">
 		<h1 class="top-title">
 			服务器列表：
 		</h1>
@@ -66,13 +66,13 @@
 		  getData(){
 			  this.$axios
 				// .get("http://192.168.121.82:4040/server/queryCloudMachineList/v1.0")
-				.get("/cloudform-statistics/server/queryCloudMachineList/v1.0")
+				.get(this.$api.serverList.queryCloudMachineList)
 				.then(response=>{   
 					// console.log(response);
 					for(let i=0;i<response.data.length;i++){ 
 						this.$axios
 						// .get("http://192.168.121.82:4040/server/queryCloudMachineList/v1.0")
-						.get("/cloudform-statistics/server/getCloudMachineStatus/v1.0",{
+						.get(this.$api.serverList.getCloudMachineStatus,{
 							params:{
 							instanceId:response.data[i].server_instance_id
 							}
@@ -91,13 +91,13 @@
 
 				this.$axios
 				// .get("http://192.168.121.82:4040/server/queryFrontMachineList/v1.0")
-				.get("/cloudform-statistics/server/queryFrontMachineList/v1.0")
+				.get(this.$api.serverList.queryFrontMachineList)
 				.then(response=>{  
 					// console.log(response);
 					for(let i=0;i<response.data.length;i++){ 
 						this.$axios
 						// .get("http://192.168.121.82:4040/server/queryCloudMachineList/v1.0")
-						.get("/cloudform-statistics/server/getFrontMachineStatus/v1.0",{
+						.get(this.$api.serverList.getFrontMachineStatus,{
 							params:{
 							instanceId:response.data[i].server_instance_id
 							}
@@ -128,14 +128,17 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
+	
 	.server-list,.ip-list{
 		float: left;
 		width: 20%;
 		min-width: 220px;
 		min-height: 224px;
-		border: 1px solid #EBEEF5;
+		border: 1px solid #095795;
 		margin: 25px 2.3%;
 		background: url(../../assets/img/serverbg.png) right top;
+		color: #a5c3ff;
 	}
 	.server-list h3,.ip-list h3{
 		margin: 20px 10px 10px 20px;
@@ -158,4 +161,38 @@
 	.abnormal{
 		color: #ff3341;
 	}
+	
+	
+</style>
+<style>
+	.leader .el-tabs--border-card>.el-tabs__header{
+		background-color:#173963;
+		border-bottom: 1px solid #0e477e;
+	}
+	
+	.leader .el-tabs--border-card{
+		border: 1px solid #0e477e;
+		background-color:transparent;
+	}
+	.leader .el-tabs--border-card>.el-tabs__content{
+		background-color:rgba(5, 55, 92, 0.5);
+		min-height: 300px;
+	}
+	.leader .el-tabs--border-card>.el-tabs__header .el-tabs__item{
+		color: #a5c3ff;
+	}
+	.leader .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+		color: #673ab7;
+	}
+	
+		
+	.leader .el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+		background-color: #0b3558;
+		color: #fff;
+		border-right-color: #0e477e;
+    border-left-color: #0e477e;
+	}
+	
+	
+	
 </style>

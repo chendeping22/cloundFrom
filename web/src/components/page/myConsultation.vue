@@ -186,10 +186,8 @@
 			         });
 					return
 				}
-				this.$axios.get("/cloudform-imgconsultation/consultation/queryConsultation/v1.0",{
-//				this.$axios.get("http://192.168.121.91:2020/consultation/queryConsultation/v1.0",{
+				this.$axios.get(this.$api.myConsultation.searchList,{
 				    params:{
-				      "token":sessionStorage.getItem("loginToken"),
 				      "page":pageNum,
 				      "hospitalName":this.searchForm.hospital,
 				      "patientName":this.searchForm.name,
@@ -207,12 +205,11 @@
 			
 			},
 			getConsultationList(pageNum) {
-				this.$axios.get("/cloudform-imgconsultation/consultation/myConsultationList/v1.0", {
+				this.$axios.get(this.$api.myConsultation.getConsultationList, {
 //				this.$axios.get("http://192.168.121.91:2020/consultation/myConsultationList/v1.0", {
 						params: {
 							"page": pageNum,
-							"consultationReceiveDoctor": sessionStorage.getItem("userId"),
-							"token":sessionStorage.getItem("loginToken")
+							"consultationReceiveDoctor": sessionStorage.getItem("userId")
 						}
 					}).then((res) => {
 						console.log(res)
@@ -232,16 +229,6 @@
 					this.searchList(val)
 				}
 			},
-			checkReport(consultationId,doctorType) { //查看报告
-				
-				let {href} = this.$router.resolve({
-					path: '/report',query:{
-						consultationId,
-						doctorType
-					}
-				});
-				window.open(href, '_blank');
-			},
 			editReport(consultationId,localpid,type) { //填写报告
 				let {href} = this.$router.resolve({
 					path: '/editReport',query:{
@@ -259,11 +246,11 @@
 			queryDiagnose(consultationId){
 				this.editDiagnoseFormVisible = true;
 				this.consultationId = consultationId;
-				this.$axios.get("/cloudform-imgconsultation/consultation/finishConsultation/v1.0", {
+				this.$axios.get(this.$api.myConsultation.queryDiagnose, {
+//				this.$axios.get("/cloudform-imgconsultation/consultation/finishConsultation/v1.0", {
 //				this.$axios.get("http://192.168.121.91:2020/consultation/queryDiagnosticOpinion/v1.0", {
 						params:{
-							"consultationId":this.consultationId,
-							"token":sessionStorage.getItem("loginToken")
+							"consultationId":this.consultationId
 						}
 					}).then((res) => {
 						this.diagnoseForm.diagnose = res.data;
@@ -279,8 +266,8 @@
 						cancelButtonText: '取消',
 						type: 'warning'
 					}).then(() => {
-						this.$axios.post("/cloudform-imgconsultation/consultation/refuseOrReceiveConsultation/v1.0?token="+sessionStorage.getItem("loginToken"), {
-//						this.$axios.post("http://192.168.121.91:2020/consultation/saveDiagnosticOpinion/v1.0?token="+sessionStorage.getItem("loginToken"), {
+						this.$axios.post(this.$api.myConsultation.saveDiagnosticOpinion, {
+//						this.$axios.post("http://192.168.121.91:2020/consultation/saveDiagnosticOpinion/v1.0", {
 								"id": this.consultationId,
 								"diagnosticOpinion":text
 							}).then((res) => {
@@ -323,8 +310,8 @@
 						cancelButtonText: '取消',
 						type: 'warning'
 					}).then(() => {
-						this.$axios.post("/cloudform-imgconsultation/consultation/refuseOrReceiveConsultation/v1.0?token="+sessionStorage.getItem("loginToken"), {
-//						this.$axios.post("http://192.168.121.91:2020/consultation/refuseOrReceiveConsultation/v1.0?token="+sessionStorage.getItem("loginToken"), {
+						this.$axios.post(this.$api.myConsultation.refuseOrReceiveConsultation, {
+//						this.$axios.post("http://192.168.121.91:2020/consultation/refuseOrReceiveConsultation/v1.0", {
 								"consultationId": id,
 								"type": type,
 								"refuseMessage": ""
@@ -342,7 +329,7 @@
 
 				} else {
 					if(reason!=""){
-						this.$axios.post("/cloudform-imgconsultation/consultation/refuseOrReceiveConsultation/v1.0?token="+sessionStorage.getItem("loginToken"), {
+						this.$axios.post(this.$api.myConsultation.refuseOrReceiveConsultation, {
 //						this.$axios.post("http://192.168.121.91:2020/consultation/refuseOrReceiveConsultation/v1.0", {
 								"consultationId": this.consultationId,
 								"type": type,
@@ -381,11 +368,10 @@
 						cancelButtonText: '取消',
 						type: 'warning'
 					}).then(() => {
-						this.$axios.get("/cloudform-imgconsultation/consultation/finishConsultation/v1.0", {
+						this.$axios.get(this.$api.myConsultation.finishConsultation, {
 //						this.$axios.get("http://192.168.121.91:2020/consultation/finishConsultation/v1.0", {
 								params:{
-								"consultationId": id,
-								"token":sessionStorage.getItem("loginToken")
+								"consultationId": id
 								}
 							}).then((res) => {
 								this.getConsultationList(1);
@@ -408,7 +394,7 @@
 				this.userList=row;
 			},
 			pacsView(studyUid){//阅片
-				var url  = "http://122.13.3.102:18000/clinicWebPacsViewPc/index.html#"+studyUid
+				var url  = this.$api.pacsView+studyUid
 				window.open(url,"_blank")
 			}
 			

@@ -26,24 +26,25 @@
 					<div class="report_info">
 						<ul>
 							<li><b>姓名：</b>{{reportInfo.patientName}}</li>
-							<li><b>性别：</b>{{reportInfo.patientSex}}</li>
+							<li><b>性别：</b>{{reportInfo.patientSex=="1"?"男":"女"}}</li>
 							<li><b>年龄：</b>{{reportInfo.patientAge}}</li>
-							<li><b>身份证号：</b>{{reportInfo.patientID}}</li>
 							<li><b>电话：</b>{{reportInfo.patientMobile}}</li>
+						</ul>
+						<ul>
 							<li><b>就诊日期：</b>{{reportInfo.visitTime}}</li>
 							<li><b>就诊医院：</b>{{reportInfo.hospitalName}}</li>
-							<li></li>
 						</ul>
 					</div>
 					<!--报告详情-->
 					<div class="report_detail">
 						<div class="finding">
 							<h5>检查所见：</h5>
-							<p>{{reportInfo.findings}}</p>
+							<pre>{{filterFindingText}}</pre>
+							<!--<textarea v-model="reportInfo.findings">{{reportInfo.findings}}</textarea>-->
 						</div>
 						<div class="diagnose">
 							<h5>诊断报告：</h5>
-							<p>{{reportInfo.diagnostic}}</p>
+							<pre>{{filterDiagnoseText}}</pre>
 						</div>
 					</div>
 					<!--报告尾部-->
@@ -72,16 +73,32 @@
 	export default {
 		data() {
 			return {
-				reportInfo:{}
+				reportInfo:{
+					findings:'',
+					diagnostic:''
+				}
 			}
+		},
+		filters:{
+			formatDate(time) {
+	        	return time.substr(0,19);
+	        }
 		},
 		mounted() {
 			this.getReportInfo();
 		},
+		computed:{
+			filterFindingText(){
+				return this.reportInfo.findings.replace(/[\n\r]+/g,'\n')
+			},
+			filterDiagnoseText(){
+				return this.reportInfo.diagnostic.replace(/[\n\r]+/g,'\n')
+			}
+		},
 		methods: {
 			handlePrint() {
 				console.log("打印");
-				var printStr = document.getElementsByClassName("main")[0].innerHTML;
+				var printStr = document.getElementsByClassName("report")[0].innerHTML;
 				var oldStr = document.body.innerHTML;
 				document.body.innerHTML = printStr;
 				window.print();
@@ -94,12 +111,11 @@
 			getReportInfo() {
 				let id = this.$route.query.consultationId;
 				let localpid = this.$route.query.localpid				
-				this.$axios.get("/cloudform-imgconsultation/report/getReportInfo/v1.0", {
+				this.$axios.get(this.$api.report.getReportInfo, {
 //				this.$axios.get("http://192.168.121.91:2020/report/getReportInfo/v1.0", {
 					params: {
 						"consultationId": id,
-						"localpid":localpid,
-						"token":sessionStorage.getItem("loginToken")
+						"localpid":localpid
 					}
 				}).then((res) => {
 					console.log(res);
@@ -175,16 +191,14 @@
 		top: 60px;
 		left: 0;
 		right: 0;
-		bottom: 0;
+		bottom: 60px;
 		overflow: auto;
-		padding-bottom: 60px;
-		
 	}
 	.report{
 		width: 80%;
 		height: 800px;
 		background: #fff;
-		margin: 40px auto 0;
+		margin: 40px auto;
 		box-shadow: 0px 3px 6px 0px rgba(13, 99, 174, 0.1);
 		box-sizing: border-box;
 		padding: 20px;
@@ -192,7 +206,7 @@
 	}	
 	/*报告头*/
 	.report_header	{
-		height: 20%;
+		height: 15%;
 		border-bottom: 1px solid #e1e1e1;
 		position: relative;
 	}
@@ -222,7 +236,7 @@
 	
 	/*基本信息*/
 	.report_info	{
-		height: 12%;
+		height: 10%;
 		border-bottom: 1px solid #e1e1e1;
 		position: relative;
 	}
@@ -235,34 +249,47 @@
 		top:50%;
 		margin-top: -29px;
 	}
+	
+	.report_info ul:last-child{
+		margin-top: 0px;
+	}
+	.report_info ul:last-child li{
+		width: 50%;
+		padding: 5px 0;
+	}
 	.report_info ul li{
 		width: 25%;
 		padding: 5px 0;
 	}
 	
+	
+	
 	/*报告详情*/
 	.report_detail	{
-		height: 56%;
+		height: 65%;
 		border-bottom: 1px solid #e1e1e1;
 		padding: 15px 0;
 		box-sizing: border-box;
 	}
-	.report_detail	p{
-		text-indent: 25px;
+	.report_detail	pre{
 		line-height: 25px;
-		padding-top: 10px;
+		padding: 10px 30px;
+		white-space: pre-wrap;
+		word-wrap: break-word;
 	}
 	
 	.report_detail .finding{
 		height: 50%;
+		overflow: hidden;
 	}
 	.report_detail .diagnose{
 		height: 50%;
+		overflow: hidden;
 	}
 	
 	/*报告尾部*/
 	.report_footer{
-		height: 12%;
+		height: 10%;
 		position: relative;
 	}
 	.report_footer	ul{

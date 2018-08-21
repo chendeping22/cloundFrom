@@ -50,10 +50,9 @@
 						name:input
 					};
 				} 
-   				 var token = sessionStorage.getItem("loginToken");
 				this.$axios
 				// .get("http://192.168.121.132:4040/formStatistics/getCommunityList/v1.0",{
-				.get("/cloudform-statistics/formStatistics/getCommunityList/v1.0",{
+				.get(this.$api.chscList.getData,{
 					params:param
 				})
 				.then(response=>{

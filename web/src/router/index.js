@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Reservation from './reservation-route'
 // import Login from '@/components/page/Login'
 // import home from '@/components/page/home'
 // import dataStats from '@/components/page/dataStats'
@@ -58,10 +59,6 @@ export default new Router({//懒加载
 					meta: { requiresId: true, sideActive: '/home/map' }
 				},
 				{
-					path: 'map2', component: () => import('@/components/page/map2'),
-					meta: { requiresId: true, sideActive: '/home/map2' }
-				},
-				{
 					path: 'chscList', component: () => import('@/components/page/chscList'),
 					meta: { requiresId: true, sideActive: '/home/chscList' }
 				},
@@ -77,8 +74,25 @@ export default new Router({//懒加载
 					path: 'expertExamine', component: () => import('@/components/page/expertExamine'),
 					meta: { requiresId: true, sideActive: '/home/expertExamine' }
 				},
-
+				{
+					path: 'patientList', component: () => import('@/components/page/patientList'),
+					meta: { requiresId: true, sideActive: '/home/patientList' }
+				},
+				{
+					path: 'teleConsultion', component: () => import('@/components/page/teleConsultion'),
+					meta: { requiresId: true, sideActive: '/home/teleConsultion' }
+				},
+//				{
+//					path: 'teleConsultList', component: () => import('@/components/page/teleConsultList'),
+//					meta: { requiresId: true, sideActive: '/home/teleConsultList' }
+//				},
+//				{
+//					path: 'teleConsultList', component: () => import('@/components/chatRoom/teleConsultList'),
+//					meta: { requiresId: true, sideActive: '/home/teleConsultList' }
+//				},
+			   ...Reservation
 			]
 		}
 	]
 })
+

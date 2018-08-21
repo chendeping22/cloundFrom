@@ -1,8 +1,6 @@
 <template>
 	<div class="container">
-		<h1 class="top-title">
-			云胶片：
-		</h1>
+		<h1 class="top-title">电子影像：</h1>
         <div class="clear"> 
             <!-- 菜单 -->  
             <ul class="navmenu" >
@@ -18,7 +16,7 @@
             </ul>
               <!--内容  -->
             <div class="content"> 
-                <el-collapse v-model="activeNames" @change="handleChange">
+                <el-collapse v-model="activeNames" @change="getReportToken">
                      <el-collapse-item v-for="item in reportList" :key="item.reportIdentity" :name="item.reportIdentity">
                          <template slot="title">
                             <span class="content-title">{{item.reportTypeName}}</span>
@@ -38,7 +36,7 @@
                                         </el-col>    
                                         <el-col :span="21">
                                             <p>{{item.orderChecksite}}</p>
-                                            <p>{{item.reportFinding}}</p>
+                                            <p>{{item.reportFinding}}</p> 
                                         </el-col>    
                                     </el-row> 
                                 </div>
@@ -46,6 +44,7 @@
                             <el-col :span="6">
                                 <div class="QR-code"> 
                                     <qriously :value="initQCode+item.reportIdentity" :size="125"/> 
+                                    <!-- <qriously value="weixin://wxpay/bizpayurl?pr=NH76aIm" :size="125"/>  -->
                                     <p>(30分钟内有效)</p>
                                 </div>
                                 </el-col>
@@ -98,21 +97,16 @@ export default {
       ],
       reportList: [],
       num: 0,
-      token: sessionStorage.getItem("loginToken"),
       initQCode: ""
     };
   },
   mounted() {
-    this.getData();
+    this.getType();
     this.handleClick("");
-    console.log(this.token);
   },
   methods: {
-    getData() {
-      this.$axios 
-        // .get("http://192.168.121.62:8009/report/getTypes/v1.0?token=" + this.token) 
-        // .get(  "http://122.13.2.38:8010/report/getTypes/v1.0?token=" + this.token )
-        .get(  "/cloudform-cloudfilm/report/getTypes/v1.0?token=" + this.token )
+    getType() {
+      this.$axios.get(this.$api.cloudFilm.getType)
         .then(response => {
           console.log(response);
           let list = response.data.data;
@@ -125,37 +119,27 @@ export default {
           });
         })
         .catch(error => console.log(error));
-      this.$axios
-        // .get(`http://192.168.121.62:8009/report/getReportList/v1.0?token=${this.token }`)
-        // .get(`http://122.13.2.38:8010/report/getReportList/v1.0?token=${this.token }`)
-        .get(`/cloudform-cloudfilm/report/getReportList/v1.0?token=${this.token}`)
+      this.$axios.get(this.$api.cloudFilm.getReportList)
         .then(response => {
           console.log(response);
           // this.reportList=response.data.data;
         })
         .catch(error => console.log(error));
     },
-    handleChange(val) {
+    getReportToken(val) {
       for (let i = 0; i < this.reportList.length; i++) {
         if (this.reportList[i].reportIdentity == val[val.length - 1]) {
           console.log(this.reportList[i].patientName);
-          this.$axios
-            // .get(`http://192.168.121.62:8009/report/getReportToken/v1.0`, 
-            // .get(`http://122.13.2.38:8010/report/getReportToken/v1.0`, 
-              .get( "/cloudform-cloudfilm/report/getReportToken/v1.0",
+          this.$axios.get(this.$api.cloudFilm.getReportToken,
               {
                 params: {
-                  token: this.token,
                   name: this.reportList[i].patientName
                 }
               }
             )
             .then(response => {
-              // console.log(response); 
-              this.initQCode = `http://122.13.2.38:8008/html/report.html?token=${this.token}&reportToken=${
               // this.initQCode = `http://192.168.121.137:80/html/report.html?token=${this.token}&reportToken=${
-                response.data.data
-              }&reportId=`;
+              this.initQCode = `${this.$api.cloudFilm.initQCode}?token=${this.token}&reportToken=${response.data.data}&reportId=`;
             })
             .catch(error => console.log(error));
         }
@@ -164,14 +148,10 @@ export default {
     handleClick(index, type) {
       this.num = index;
       let param = {
-        type: type,
-        token: this.token
+        type: type
         // telephone:'18825141019'
       };
-      this.$axios
-        // .get("http://192.168.121.62:8009/report/getReportList/v1.0",
-        // .get("http://122.13.2.38:8010/report/getReportList/v1.0",
-          .get("/cloudform-cloudfilm/report/getReportList/v1.0",
+      this.$axios.get(this.$api.cloudFilm.getReportList,
           {
             params: param
           }
@@ -191,8 +171,18 @@ export default {
   }
 };
 </script>
+ <style>
+ 	.content .el-collapse .el-collapse-item .el-collapse-item__header{
+		height: 64px;
+		line-height: 64px;
+}
+.content .el-collapse .el-collapse-item .el-collapse-item__arrow{
+	line-height: 64px;
+}	
+ </style>
  
 <style scoped>
+
 .navmenu {
   float: left;
 }
@@ -202,6 +192,12 @@ export default {
   text-align: center;
   display: block;
   box-sizing: border-box;
+  cursor: pointer;
+}
+.navmenu li:hover{
+ background-color: #fff;
+  border: 1px solid #ddd;
+  border-right: none;
 }
 .navmenu li p {
   color: #666;
@@ -223,6 +219,7 @@ export default {
   border-radius: 4px;
   padding: 30px;
   font-size: 14px;
+  background: url(../../assets/img/filmbg.jpg) no-repeat bottom center;
 }
 .content-title {
   color: #0d64ae;

@@ -48,11 +48,7 @@
 		<div class="clear"></div>
 		
 		
-		<el-dialog :visible.sync="dialogIsVisible" width = "70%">   
-			<div slot="title" >  
-				<span>会诊详情：</span>
-				<button type="button" aria-label="Close" class="el-dialog__headerbtn"><i class="el-dialog__close el-icon el-icon-close"></i></button>
-			</div> 
+		<el-dialog title="会诊详情" :visible.sync="dialogIsVisible" width = "70%">
 			<div class="title">基本信息</div>
 			<div class="baseInfo">
 				<ul>
@@ -120,10 +116,8 @@
 			         });
 					return
 				}
-				this.$axios.get("/cloudform-imgconsultation/consultation/queryConsultation/v1.0",{
-//				this.$axios.get("http://192.168.121.91:2020/consultation/queryConsultation/v1.0",{
+				this.$axios.get(this.$api.consultationList.getConsultationList,{
 				    params:{
-				      "token":sessionStorage.getItem("loginToken"),
 				      "page":pageNum,
 				      "patientMobile":this.searchForm.phoneNum,
 				      "patientName":this.searchForm.name
@@ -140,10 +134,8 @@
 			
 			},
 			getConsultationList(num){
-				this.$axios.get("/cloudform-imgconsultation/consultation/queryConsultationList/v1.0",{
-//				this.$axios.get("http://192.168.121.91:2020/consultation/queryConsultationList/v1.0",{
+				this.$axios.get(this.$api.consultationList.getConsultationList,{
 				    params:{
-				      "token":sessionStorage.getItem("loginToken"),
 				      "hospitalId":sessionStorage.getItem("hospitalId"),
 				      "page":num
 			    	}
@@ -179,11 +171,9 @@
 		          cancelButtonText: '取消',
 		          type: 'warning'
 		        }).then(() => {
-		        	 this.$axios.get("/cloudform-imgconsultation/consultation/recallConsultation/v1.0",{
-//			        this.$axios.get("http://192.168.121.91:2020/consultation/recallConsultation/v1.0",{
+		        	 this.$axios.get(this.$api.consultationList.removeConsultation,{
 			        	params:{
-						"localpid":localpid,
-						"token":sessionStorage.getItem("loginToken")
+						"localpid":localpid
 						}
 			        }).then((res)=>{
 			        	this.getConsultationList(1)
@@ -209,7 +199,7 @@
 				console.log(column); 
 			},
 			pacsView(studyUid){//阅片
-				var url  = "http://122.13.3.102:18000/clinicWebPacsViewPc/index.html#"+studyUid
+				var url  = this.$api.pacsView+studyUid
 				window.open(url,"_blank")
 			}
 		},
@@ -256,9 +246,9 @@
 	.el-dialog .el-table td{
 		border: none;
 	}
-	.el-dialog__header {
+	/*.el-dialog__header {
     	border-bottom: 1px solid #ddd;
     	background: #f8fafd;
     	padding: 20px 20px 15px;
-	}
+	}*/
 </style>

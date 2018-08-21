@@ -1,10 +1,8 @@
 <template>
-	<div class="container">
-		<h1 v-if="roleId==4" style="margin-bottom:10px; text-align:center; font-size:24px;">{{hospitalName}}</h1>
-		<h1 class="top-title">
-			数据统计：
-		</h1>
-		<el-form :inline="true" :model="formInline" class="demo-form-inline mb20">
+	<div class="container" :class="{leader:isLeader}">
+		<h1 v-if="roleId==4" class="hospitalHeader">{{hospitalName}}数据统计</h1>
+		<h1 class="top-title">数据统计：</h1>
+		<el-form :inline="true" :model="formInline" class="demo-form-inline">
 			<!-- <el-form-item label="审批人">
 				<el-input v-model="formInline.user" placeholder="审批人"></el-input>
 			</el-form-item> --> 
@@ -57,18 +55,18 @@
 								<dd class="icon2">{{this.allStudyNumber==null||this.allStudyNumber==""? 0:this.allStudyNumber}}例</dd>
 							</dl>
 						</li>
-						<li>
+						<!-- <li>
 							<dl>
-								<dt>云胶片二维码调阅量</dt>
+								<dt>电子影像调阅量</dt>
 								<dd>{{this.filmOpenNumber==null||this.filmOpenNumber==""? 0:this.filmOpenNumber}}次</dd>
 							</dl>
 						</li>
 						<li>
 							<dl>
-								<dt>云胶片二维码发放量</dt>
+								<dt>电子影像发放量</dt>
 								<dd>{{this.filmBuildNumber==null||this.filmBuildNumber==""? 0:this.filmBuildNumber}}个</dd>
 							</dl>
-						</li>
+						</li> -->
 					</ul>
 
 				</div>
@@ -88,7 +86,7 @@
 						
 			<el-col :span="8">
 				<div class="grid-content">
-					<h3 class="item-title">医生职称分布</h3> 
+					<h3 class="item-title">会诊医生职称分布</h3> 
 					<div id="doctorTitle" :style="{width: '100%', height: '80%'}"> 
 						<div v-if="doctorTitleDistribution.length==0" :style="bg"> 
 						</div>
@@ -98,7 +96,7 @@
 						
 			<el-col :span="8">
 				<div class="grid-content">
-					<h3 class="item-title">医生出诊量排名</h3> 
+					<h3 class="item-title">会诊量排名</h3> 
           			<div :style="{width:'100%',height:'80%'}">
 						<div v-if="doctorConsultationRanking.length==0" :style="bg"> 
 						</div>
@@ -113,7 +111,7 @@
 				</div>
 			</el-col>
 
-			<el-col :span="8">
+			<!--<el-col :span="8">
 				<div class="grid-content">
 					<h3 class="item-title">医生不符合率排名</h3> 
          			<div :style="{width:'100%',height:'80%'}">	
@@ -129,10 +127,10 @@
 						</ul>
 					</div>
 				</div>
-			</el-col>
+			</el-col>-->
 			<el-col :span="8">
 				<div class="grid-content">
-					<h3 class="item-title">检查设备阳性率占比</h3> 
+					<h3 class="item-title">检查阳性率占比</h3> 
 					<div id="positive" :style="{width: '100%', height: '80%'}"> 
 						<!-- <div class="no-data" v-if="studyeQuipmentAndPositivePersent==null">暂无数据</div> --> 
 						<div v-if="studyeQuipmentAndPositivePersent.length==0" :style="bg"> 
@@ -140,7 +138,7 @@
 					</div>
 				</div>
 			</el-col>
-			<el-col :span="16">
+			<el-col :span="24">
 				<div class="grid-content">
 					<h3 class="item-title">部位检查量占比</h3>
 					<div id="checkPoint" :style="{width: '100%', height: '80%'}">
@@ -160,11 +158,11 @@
 				<div v-if="chscList.length==0" :style="bg"> 
 				</div>
 				<div class="server-list" v-for="item in chscList" :key="item.name">
-							<h3><i class="iconfont icon-yunzhuji1"></i> {{item.name}}</h3>
-							<ul>
-								<li><span>检查数量</span><strong>{{item.allStudyNumber==null?0:item.allStudyNumber}}</strong></li>
-								<li><span>设备数量</span><strong>{{item.deviceNumber==null?0:item.deviceNumber}}</strong></li> 
-							</ul>
+					<h3><i class="iconfont icon-yunzhuji1"></i> {{item.name}}</h3>
+					<ul>
+						<li><span>检查数量</span><strong>{{item.allStudyNumber==null?0:item.allStudyNumber}}</strong></li>
+						<li><span>设备数量</span><strong>{{item.deviceNumber==null?0:item.deviceNumber}}</strong></li> 
+					</ul>
 				</div> 
 			</div>
 		</div> 
@@ -180,6 +178,8 @@ export default {
         user: "",
         region: ""
       },
+      ok: 0,
+      json: [],
       doctorNumber: "", //医生数量
       consultationNumber: "", //当年累计会诊数量
       allStorageNumber: "", //累计存储使用量
@@ -195,106 +195,143 @@ export default {
       roleId: sessionStorage.getItem("roleId"),
       consultationTrendList: [], //会诊量趋势
       doctorTitleDistribution: [], //医生职称分布
-      hospitalName: sessionStorage.getItem("hospitalName"),
+      hospitalName: "",
+      hospitalId: "",
       bg: {
         backgroundImage: "url(" + require("../../assets/img/nodata.png") + ")",
         backgroundRepeat: "no-repeat",
         backgroundPosition: "center",
         width: "100%",
         height: "100%"
-      }
+      },
+      isLeader: false,
+      axisLine: "", //xy轴颜色
+      axisLabel: "", //xy字体颜色
+      splitLine: "", //坐标系网格线段颜色
+      pieLabelColor: "", //饼图字体颜色
+      lineColor: "", //曲线颜色
+      pointColor: "" //曲线和网格交点颜色
     };
   },
   mounted() {
-    let hospitalId = sessionStorage.getItem("hospitalId");
-    this.getData(hospitalId, "");
+    this.hospitalName = this.$route.query.hospitalName;
+    if (this.roleId == 2 || this.roleId == 8) {
+      this.hospitalId = sessionStorage.getItem("hospitalId");
+    } else {
+      this.hospitalId = this.$route.query.hospitalId;
+    }
+    this.getData(this.hospitalId, "");
+    this.isLeader = this.roleId == 4 ? true : false;
+    this.axisLine = this.roleId == 4 ? "#095795" : "#eee";
+    this.axisLabel = this.roleId == 4 ? "#a5c3ff" : "#0d63ae";
+    this.splitLine = this.roleId == 4 ? "#095795" : "#eee";
+    this.pieLabelColor = this.roleId == 4 ? "#a5c3ff" : "#666";
+    this.lineColor = this.roleId == 4 ? "#fff" : "#0d47ec";
+    this.pointColor = this.roleId == 4 ? "#eac052" : "#0bb9ef";
   },
   methods: {
     onSubmit() {
-      // console.log("submit!");
-      // console.log(sessionStorage.getItem("loginToken"));
-      // console.log(sessionStorage.getItem("hospitalId"));
-      let hospitalId = sessionStorage.getItem("hospitalId");
-
-      this.getData(hospitalId, this.formInline.date);
+      this.getData(this.hospitalId, this.formInline.date);
     },
-    getData(hospitalId, month) {
-      let token = sessionStorage.getItem("loginToken");
-      let param = "";
-      if (month == "" || month == null) {
-        param = `?hospitalId=${hospitalId}`;
-      } else {
-        param = `?hospitalId=${hospitalId}&month=${month}`;
-      }
-      // console.log(param);
+    axiosJson(url, dataList) {
+      //data数据可以为空
       this.$axios
-        // .get('http://192.168.121.42:4040/workStatistics/getHospitalBasicData/v1.0'+param)
-        .get(
-          "/cloudform-statistics/workStatistics/getHospitalBasicData/v1.0" +
-            param
-        )
-        .then(response => {
-          var data = response.data;
-          // console.log(response.data);
-          //统计数据
-          this.totalData(data);
-          //会诊量趋势
-          if (
-            data.consultationTrend != null &&
-            data.consultationTrend.length != 0
-          ) {
-            this.consultationTrendList = data.consultationTrend;
-            this.consultationTrend(data.consultationTrend);
-          }
-          //医生职称分布
-          if (
-            data.doctorTitleDistribution != null &&
-            data.doctorTitleDistribution.length != 0
-          ) {
-            this.doctorTitleDistribution = data.doctorTitleDistribution;
-            this.doctorTitle(data.doctorTitleDistribution);
-          }
-          //医生出诊量排名
-          if (
-            data.doctorConsultationRanking != null &&
-            data.doctorConsultationRanking.length != 0
-          ) {
-            this.doctorConsultationRanking = data.doctorConsultationRanking;
-          }
-          //医生不符合率排名
-          if (
-            data.doctorAccordRanking != null &&
-            data.doctorAccordRanking.length != 0
-          ) {
-            this.doctorAccordRanking = data.doctorAccordRanking;
-          }
-          //检查设备阳性率占比
-          if (
-            data.studyeQuipmentAndPositivePersent != null &&
-            data.studyeQuipmentAndPositivePersent.length != 0
-          ) {
-            this.studyeQuipmentAndPositivePersent =
-              data.studyeQuipmentAndPositivePersent;
-            this.positivePersent(data.studyeQuipmentAndPositivePersent);
-          }
-          //检查部位、检查占比
-          if (
-            data.studyBodyAndPersent != null &&
-            data.studyBodyAndPersent.length != 0
-          ) {
-            this.studyBodyAndPersent = data.studyBodyAndPersent;
-            this.proportion(data.studyBodyAndPersent);
+        .get(url)
+        .then(res => {
+          console.log(res.data.data);
+          this.json[dataList] = res.data.data;
+          this.ok++;
+          if (this.ok == 14) {
+            console.log(this.json);
+            this.show(this.json);
           }
         })
-        .catch(function(error) {
-          console.log(error);
+        .catch(err => {
+          console.log(err);
+          this.ok++;
+          if (this.ok == 14) {
+            this.show(this.json);
+          }
         });
-      if (this.roleId == 4) {
+    },
+    show(data) {
+      console.log(data);
+      this.joinNumber = data.getJoinNumber; //接入机构数
+      this.allStudyNumber = data.getStudyNumber; //当年累计上传检查量
+      this.consultationNumber = data.getConsultNumber; //会诊量
+      this.doctorNumber = data.getDoctorNumber; //医生数量
+      this.allStorageNumber = data.getStorageNumber; //存储量
+      // this.allQualityControlNumber = data.allQualityControlNumber;
+      // this.areaQualityControlCenter = data.areaQualityControlCenter;
+      // this.filmBuildNumber = data.filmBuildNumber;
+      // this.filmOpenNumber = data.filmOpenNumber;
+      //基础医院上传数量排名
+      this.hospitalAndUploadStudyNumber = data.getHospitalUploadRank;
+      // //签约医生数量趋势
+      // if (
+      //   data.getDoctorNumberAndDate != null &&
+      //   data.getDoctorNumberAndDate.length != 0
+      // ) {
+      //   this.signDoctorTrend = data.getDoctorNumberAndDate;
+      //   this.doctorNumber(data.getDoctorNumberAndDate);
+      // }
+      // this.loadStudy(data.hospitalAndUploadStudyNumber);
+      //会诊量趋势
+      if (
+        data.getConsultationNumberAndDate != null &&
+        data.getConsultationNumberAndDate.length != 0
+      ) {
+        this.consultationTrendList = data.getConsultationNumberAndDate;
+        this.consultationTrend(data.getConsultationNumberAndDate);
+      }
+      //医生职称分布
+      if (
+        data.getDoctorTitleSpread != null &&
+        data.getDoctorTitleSpread.length != 0
+      ) {
+        this.doctorTitleDistribution = data.getDoctorTitleSpread;
+        this.doctorTitle(data.getDoctorTitleSpread);
+      }
+      //医生出诊量排名
+      if (
+        data.getConsultationDoctorAndNumber != null &&
+        data.getConsultationDoctorAndNumber.length != 0
+      ) {
+        this.doctorConsultationRanking = data.getConsultationDoctorAndNumber;
+      }
+      //   //医生不符合率排名
+      //   if (
+      //     data.doctorAccordRanking != null &&
+      //     data.doctorAccordRanking != 0
+      //   ) {
+      //     this.doctorAccordRanking = data.doctorAccordRanking;
+      //   }
+      //检查设备阳性率占比
+
+      if (
+        data.getStudyePositiveAndPersent != null &&
+        data.getStudyePositiveAndPersent.length != 0
+      ) {
+        this.studyeQuipmentAndPositivePersent =
+          data.getStudyePositiveAndPersent;
+        this.positivePersent(data.getStudyePositiveAndPersent);
+      }
+      //检查部位、检查占比
+      if (
+        data.getStudyBodyAndPersent != null &&
+        data.getStudyBodyAndPersent.length != 0
+      ) {
+        this.studyBodyAndPersent = data.getStudyBodyAndPersent;
+        this.proportion(data.getStudyBodyAndPersent);
+      }
+      //按地区医生数量分布
+      //   this.doctorAreaDistribution = data.doctorAreaDistribution;
+      this.doctorArea(data.getDoctorNumberAndArea);
+       if (this.roleId == 4) {
         this.$axios
-          // .get("http://192.168.121.42:4040/formStatistics/getHospitalList/v1.0"+param)
-          .get("/cloudform-statistics/formStatistics/getCommunityList/v1.0", {
+          .get(this.$api.dataStats2.getCommunityList, {
             params: {
-              parentId: sessionStorage.getItem("hospitalId")
+              parentId: this.hospitalId
             }
           })
           .then(response => {
@@ -304,6 +341,18 @@ export default {
           .catch(error => console.log(error));
       }
     },
+    getData(hospitalId,month) {
+      let param = "";
+      if (month == "" || month == null) {
+        param = `?hospitalId=${hospitalId}`;
+      } else {
+        param = `?hospitalId=${hospitalId}&month=${month}`;
+      }
+      for (var key in this.$api.dataStats) {
+        // console.log(key);
+        this.axiosJson(this.$api.dataStats[key] + param, key);
+      }
+    }, 
     option(xAxis, yAxis, name, formatter) {
       return {
         tooltip: {
@@ -324,18 +373,18 @@ export default {
           type: "category",
           axisLine: {
             lineStyle: {
-              color: "#eee"
+              color: this.axisLine
             }
           },
           axisLabel: {
-            color: "#0d63ae",
+            color: this.axisLabel,
             margin: 15
           },
           boundaryGap: false,
           splitLine: {
             show: true,
             lineStyle: {
-              color: "#eee"
+              color: this.splitLine
             }
           },
           data: xAxis
@@ -346,17 +395,20 @@ export default {
           nameGap: 30,
           gridIndes: 0,
           nameTextStyle: {
-            color: "#999999"
+            color: this.axisLabel
           },
           axisLine: {
             lineStyle: {
-              color: "#eeeee"
+              color: this.axisLine
             }
+          },
+          axisLabel: {
+            color: this.axisLabel
           },
           splitLine: {
             show: true,
             lineStyle: {
-              color: "#eee"
+              color: this.splitLine
             }
           }
         },
@@ -365,8 +417,8 @@ export default {
             data: yAxis,
             type: "line",
             itemStyle: {
-              color: "#0d47ec",
-              borderColor: "#0d47ec",
+              color: this.lineColor,
+              borderColor: this.lineColor,
               borderWidth: 5
             },
             lineStyle: {
@@ -379,11 +431,11 @@ export default {
                 colorStops: [
                   {
                     offset: 0,
-                    color: "#2783c6" // 0% 处的颜色
+                    color: this.pointColor // 0% 处的颜色
                   },
                   {
                     offset: 1,
-                    color: "#0bb9ef" // 100% 处的颜色
+                    color: this.pointColor // 100% 处的颜色
                   }
                 ],
                 globalCoord: false // 缺省为 false
@@ -427,7 +479,7 @@ export default {
     },
     //医生职称分布
     doctorTitle(data) {
-      // console.log(data);
+      console.log(data);
       var yAxis = [];
       for (var i = 0; i < data.length; i++) {
         yAxis[i] = {};
@@ -453,14 +505,14 @@ export default {
             name: "人数",
             type: "pie",
             label: {
-              color: "#666",
+              color: this.pieLabelColor,
               formatter: "{b} {c}人"
             },
             labelLine: {
-              length:10,
-              length2:10,
+              length: 10,
+              length2: 10,
               lineStyle: {
-                color: "#666"
+                color: this.pieLabelColor
               }
             },
             radius: ["30%", "75%"],
@@ -473,19 +525,23 @@ export default {
       myChart.setOption(option);
     },
     //检查设备阳性率占比
-    positivePersent(data) { 
+    positivePersent(data) {
       let xAxis = [];
       let yAxis = [];
-      // for(let key in data[0]){
-      // 	yAxis.push(data[0][key]);
-      // }
-      // console.log(yAxis);
       for (let i = 0; i < data.length; i++) {
-        xAxis[i] = data[i].type;
+        xAxis[i] = data[i].studyType;
         yAxis[i] = {};
-        yAxis[i].name = data[i].type;
-        yAxis[i].value = data[i].number;
+        yAxis[i].name = data[i].studyType;
+        yAxis[i].value = data[i].studyNumber;
       } 
+      var x = [];
+      var y = [];
+      x = xAxis[5];
+      xAxis[5] = xAxis[1];
+      xAxis[1] = x;
+      y = yAxis[5];
+      yAxis[5] = yAxis[1];
+      yAxis[1] = y;
       let positive = this.$echarts.init(document.getElementById("positive"));
       let positiveOpt = {
         noDataLoadingOption: {
@@ -501,16 +557,6 @@ export default {
           trigger: "item",
           formatter: "{a} <br/>{b}: {c} ({d}%)"
         },
-        // legend: {
-        //     orient: 'vertical',
-        //     right: 0,
-        //     top: '10%',
-        //     data: xAxis,
-        //     // ["平扫",'增强',"常规","其他"],
-        //     textStyle: {
-        //         color: '#666'
-        //     }
-        // },
         series: [
           {
             name: " ",
@@ -519,44 +565,39 @@ export default {
             center: ["50%", "50%"],
             avoidLabelOverlap: false,
             color: ["#0D63AE", "#A572E4", "#2292D3", "#2924DD", "#06AFF6"],
+
             label: {
-              position: "outside", 
-              formatter:function(data){ 
-                    return data.name+'：'+parseInt(data.percent)+'%';
+              position: "outside",
+              formatter: function(data) {
+                return data.name + "：" + parseInt(data.percent) + "%";
+              },
+              color: this.pieLabelColor,
+              rich: {
+                a: {
+                  color: "red",
+                  lineHeight: 10
                 },
-              color: "#333"
-            },
-            labelLine: { 
-              lineStyle: {
-                color: "#666"
+                b: {
+                  backgroundColor: {
+                    image: "xxx/xxx.jpg"
+                  },
+                  height: 40
+                },
+                x: {
+                  fontSize: 18,
+                  fontFamily: "Microsoft YaHei",
+                  borderColor: "#449933",
+                  borderRadius: 4
+                }
               }
             },
-            // label: {
-            //   position: "outside",
-            //   formatter: "{a} {b} {c}",
-            //   color: "#666",
-            //   rich: {
-            //     a: {
-            //       color: "red",
-            //       lineHeight: 10
-            //     },
-            //     b: {
-            //       backgroundColor: {
-            //         image: "xxx/xxx.jpg"
-            //       },
-            //       height: 40
-            //     },
-            //     x: {
-            //       fontSize: 18,
-            //       fontFamily: "Microsoft YaHei",
-            //       borderColor: "#449933",
-            //       borderRadius: 4
-            //     }
-            //   }
-            // },
-            // labelLine: {
-            //   show: false
-            // },
+            labelLine: {
+              length: 10,
+              length2: 10,
+              lineStyle: {
+                color: this.pieLabelColor
+              }
+            },
             data: yAxis
           }
         ]
@@ -565,15 +606,15 @@ export default {
     },
     //检查部位、检查占比
     proportion(data) {
-		// console.log(data);
       let xAxis = [];
       let yAxis = [];
       for (var i = 0; i < data.length; i++) {
-        xAxis[i] = data[i].type;
+        xAxis[i] = data[i].body;
         yAxis[i] = {};
-        yAxis[i].name = data[i].type;
-        yAxis[i].value = parseInt(data[i].number);
+        yAxis[i].name = data[i].body;
+        yAxis[i].value = data[i].number;
       }
+      xAxis = ['胸', '头', '脊椎', '腹', '四肢', '上肢', '脸', '血管', '动脉', '尿', '生殖', '颈', '静脉', '神经'];
       let checkPoint = this.$echarts.init(
         document.getElementById("checkPoint")
       );
@@ -581,23 +622,28 @@ export default {
         tooltip: {
           show: true,
           trigger: "item",
-          formatter: "{b}:{c}%"
+          formatter: "{b}:{c}"
         },
         xAxis: {
           type: "category",
           axisLine: {
             lineStyle: {
-              color: "#eee"
+              color: this.axisLine
             }
           },
-          axisLabel: {
-            color: "#0d63ae",
-            margin: 15
+          axisLabel: { 
+             color: this.axisLabel,
+                margin: 10,
+                showMinLabel: true,
+                align: 'center',
+                interval: 0,
+                fontSize: 12,
+                rotate: 0
           },
           splitLine: {
             show: true,
             lineStyle: {
-              color: "#eee"
+              color: this.splitLine
             }
           },
           data: xAxis
@@ -608,25 +654,31 @@ export default {
           nameGap: 30,
           gridIndes: 0,
           nameTextStyle: {
-            color: "#999999"
+            color: this.axisLabel
           },
           axisLine: {
             lineStyle: {
-              color: "#eeeee"
+              color: this.axisLine
             }
+          },
+          axisLabel: {
+            color: this.axisLabel
           },
           splitLine: {
             show: true,
             lineStyle: {
-              color: "#eee"
+              color: this.splitLine
             }
           }
         },
         series: [
           {
+            // For shadow
             type: "bar",
             itemStyle: {
-              normal: { color: "rgba(0,0,0,0.05)" }
+              normal: {
+                color: "rgba(0,0,0,0.05)"
+              }
             },
             barGap: "-100%",
             barCategoryGap: "40%",
@@ -637,16 +689,34 @@ export default {
             itemStyle: {
               normal: {
                 color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: "#83bff6" },
-                  { offset: 0.5, color: "#188df0" },
-                  { offset: 1, color: "#188df0" }
+                  {
+                    offset: 0,
+                    color: "#83bff6"
+                  },
+                  {
+                    offset: 0.5,
+                    color: "#188df0"
+                  },
+                  {
+                    offset: 1,
+                    color: "#188df0"
+                  }
                 ])
               },
               emphasis: {
                 color: new this.$echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: "#2378f7" },
-                  { offset: 0.7, color: "#2378f7" },
-                  { offset: 1, color: "#83bff6" }
+                  {
+                    offset: 0,
+                    color: "#2378f7"
+                  },
+                  {
+                    offset: 0.7,
+                    color: "#2378f7"
+                  },
+                  {
+                    offset: 1,
+                    color: "#83bff6"
+                  }
                 ])
               }
             },
@@ -662,15 +732,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/*容器*/
-
-h1.top-title {
-  /*font-weight: normal;*/
-  font-size: 16px;
-  padding: 0 0 10px 0;
-  margin: 0 0 26px 0;
-  border-bottom: 1px solid #d2d2d3;
-  color: #303133;
+/*医院名称*/
+.hospitalHeader {
+  margin-bottom: 10px;
+  text-align: center;
+  font-size: 24px;
+  color: #a5c3ff;
 }
 /*重置输入框、按钮的样式*/
 .el-input__inner {
@@ -687,16 +754,12 @@ h1.top-title {
   border-color: #057eff;
 }
 
-.mb20 {
-  margin-bottom: 20px;
-}
 #TrendOfCol {
   width: 800px;
   height: 300px;
 }
 
-.server-list,
-.ip-list {
+.server-list {
   float: left;
   width: 20%;
   min-width: 220px;
@@ -704,34 +767,33 @@ h1.top-title {
   border: 1px solid #ebeef5;
   margin: 15px 2.3%;
   background-color: #fff;
-  /*background: url(../../assets/img/serverbg.png) right top;*/
 }
-.server-list h3,
-.ip-list h3 {
+
+.leader .server-list {
+  background: linear-gradient(
+    0deg,
+    rgba(4, 71, 158, 0.4) 0%,
+    rgba(14, 44, 128, 0.4) 100%
+  );
+  background-blend-mode: normal, normal;
+  box-shadow: 0px 3px 10px 0px rgba(0, 0, 0, 0.52);
+  border: solid 1px #095795;
+  color: #a5c3ff;
+}
+.server-list h3 {
   margin: 20px 10px 10px 20px;
-  /* padding-left: 40px; */
   min-height: 30px;
-  /* background: url(../../assets/img/icon-server.png)no-repeat left top; */
 }
-.ip-list h3 {
-  background: url(../../assets/img/icon-serverip.png)no-repeat left top;
-}
-.server-list li,
-.ip-list li {
+
+.server-list li {
   margin: 0 0 10px 20px;
 }
-.server-list li span,
-.ip-list li span {
+.server-list li span {
   margin-right: 20px;
 }
-.normal {
-  color: #057eff;
-}
-.abnormal {
-  color: #ff3341;
-}
+
 .icon-yunzhuji1:before {
-  font-size: 28px;
+  font-size: 26px;
   vertical-align: middle;
   color: #057eff;
 }

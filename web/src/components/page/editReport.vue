@@ -26,34 +26,36 @@
 					<div class="report_info">
 						<ul>
 							<li><b>姓名：</b>{{reportInfo.patientName}}</li>
-							<li><b>性别：</b>{{reportInfo.patientSex}}</li>
+							<li><b>性别：</b>{{reportInfo.patientSex=="1"?"男":"女"}}</li>
 							<li><b>年龄：</b>{{reportInfo.patientAge}}</li>
-							<li><b>身份证号：</b>{{reportInfo.patientID}}</li>
 							<li><b>电话：</b>{{reportInfo.patientMobile}}</li>
-							<li><b>就诊日期：</b>{{reportInfo.visitTime}}</li>
+						</ul>
+						<ul>
+							<li><b>就诊日期：</b>{{reportInfo.visitTime|formatDate}}</li>
 							<li><b>就诊医院：</b>{{reportInfo.hospitalName}}</li>
-							<li></li>
 						</ul>
 					</div>
 					<!--报告详情-->
 					<div class="report_detail">
 						<div class="finding">
-							<h5>检查所见：</h5>
+							<h5>检查所见：{{computeFindingTextNum}}/300</h5>
 							<!--<p>黏膜红白相间,白相为主,皱襞变平甚至消失,部分黏膜血管显露;可伴有黏膜颗粒或结节</p>-->
 							<el-input
 							  type="textarea"
-							  :autosize="{ minRows: 4, maxRows: 8}"
-							  placeholder="请输入相关内容"
+							  :maxlength="maxlength"
+							  :autosize="{ minRows: 5, maxRows: 8}"
+							  placeholder="字数限制300"
 							  v-model="findingText">
 							</el-input>
 						</div>
 						<div class="diagnose">
-							<h5>诊断意见：</h5>
+							<h5>诊断意见：{{computeDiagnoseTextNum}}/300</h5>
 							<!--<p>黏膜红白相间,白相为主,皱襞变平甚至消失,部分黏膜血管显露;可伴有黏膜颗粒或结节</p>-->
 							<el-input
 							  type="textarea"
-							  :autosize="{ minRows: 5, maxRows: 10}"
-							  placeholder="请输入相关内容"
+							  :maxlength="maxlength"
+							  :autosize="{ minRows: 5, maxRows: 8}"
+							  placeholder="字数限制300"
 							  v-model="diagnoseText">
 							</el-input>
 						</div>
@@ -64,7 +66,7 @@
 							<li><b>填写报告医生：</b>{{currentLoginName}}</li>
 							<li><b>会诊医生：</b>{{currentLoginName}}</li>
 							<li><b>填写时间：</b>{{currentTime}}</li>
-							<li><b>会诊时间：</b>{{reportInfo.consultationIdStartTime}}</li>
+							<li><b>会诊时间：</b>{{reportInfo.consultationIdStartTime|formatDate}}</li>
 						</ul>
 					</div>
 				</div>
@@ -85,7 +87,7 @@
 	export default {
 		data() {
 			return {
-				token:"",
+				maxlength:300,
 				doctorId:"",
 				consultationId:"",
 				localpid:"",
@@ -94,16 +96,28 @@
 				currentLoginName:sessionStorage.getItem("currentLoginName"),
 				diagnoseText:"",
 				findingText:"",
-				currentTime:""//当前时间（暂存报告时间）
+				currentTime:"",//当前时间（暂存报告时间）
 			}
 		},
+		filters: {
+	        formatDate(time) {
+	            return time.substr(0,19);
+	        }
+	    },
 		mounted() {
-			this.token = sessionStorage.getItem("loginToken");
 			this.doctorId = sessionStorage.getItem("userId");
 			this.consultationId = this.$route.query.consultationId;
 			this.localpid = this.$route.query.localpid;
 			this.formatTime();
-			this.getReportInfo(this.consultationId,this.localpid,this.token);
+			this.getReportInfo(this.consultationId,this.localpid);
+		},
+		computed:{
+			computeFindingTextNum(){
+				return this.maxlength-this.findingText.length
+			},
+			computeDiagnoseTextNum(){
+				return this.maxlength-this.diagnoseText.length
+			}
 		},
 		methods: {
 			makesureIssue(){
@@ -116,8 +130,7 @@
 		        }).catch(() => {});
 			},
 			issueReport(){
-				this.$axios.post("/cloudform-imgconsultation/report/finishReport/v1.0?token="+this.token, {
-//				this.$axios.post("http://192.168.121.91:2020/report/finishReport/v1.0?token="+this.token, {
+				this.$axios.post(this.$api.editReport.issueReport, {
 						"consultationId":this.consultationId,
 						"findings":this.findingText,
 						"diagnostic":this.diagnoseText,
@@ -131,9 +144,9 @@
 								callback: action => { 
 									window.close();
 									if(this.$route.query.type==3){
-										window.opener.location.replace(window.location.href.split("/#")[0]+"/#/home/myPatient/"+new Date().getTime());
+										window.opener.location.replace(window.location.href.split("#")[0]+"#/home/myPatient/"+new Date().getTime());
 									}else{
-										window.opener.location.replace(window.location.href.split("/#")[0]+"/#/home/myConsultation/"+new Date().getTime());
+										window.opener.location.replace(window.location.href.split("#")[0]+"#/home/myConsultation/"+new Date().getTime());
 									}
 
 								}
@@ -162,8 +175,7 @@
 				window.close();
 			},
 			saveReport(){
-				this.$axios.post("/cloudform-imgconsultation/report/saveReport/v1.0?token="+this.token, {
-//				this.$axios.post("http://192.168.121.91:2020/report/saveReport/v1.0?token="+this.token, {
+				this.$axios.post(this.$api.editReport.saveReport, {
 						"consultationId":this.consultationId,
 						"findings":this.findingText,
 						"diagnostic":this.diagnoseText,
@@ -178,12 +190,7 @@
 				          type: 'success',
 				          offset:70
 				        });
-						
-//						this.$message({
-//				          showClose: true,
-//				          type: 'success',
-//				          message: 
-//				        });
+					this.getReportInfo(this.consultationId,this.localpid);
 					}else{
 						 this.$notify({
 				          title: '失败',
@@ -204,19 +211,17 @@
 					console.log(error)
 				})
 			},
-			getReportInfo(consultationId,localpid,token){//会诊医生查询报告信息
-				this.$axios.get("/cloudform-imgconsultation/report/getNewReport/v1.0", {
-//				this.$axios.get("http://192.168.121.91:2020/report/getNewReport/v1.0", {
+			getReportInfo(consultationId,localpid){//会诊医生查询报告信息
+				this.$axios.get(this.$api.editReport.getReportInfo, {
 					params: {
 						consultationId,
-						localpid,
-						token
+						localpid
 					}
 				}).then((res) => {
 					console.log(res)
 				    this.reportInfo = res.data;
-				    this.findingText=this.reportInfo.findings;
-					this.diagnoseText = this.reportInfo.diagnostic;
+				    this.findingText=this.reportInfo.findings.replace(/[\n\r]+/g,'\n');
+					this.diagnoseText = this.reportInfo.diagnostic.replace(/[\n\r]+/g,'\n');
 				})
 				.catch((error) => {
 					console.log(error)
@@ -314,16 +319,14 @@
 		top: 60px;
 		left: 0;
 		right: 0;
-		bottom: 0;
+		bottom: 60px;
 		overflow: auto;
-		padding-bottom: 60px;
-		
 	}
 	.report{
 		width: 80%;
 		height: 800px;
 		background: #fff;
-		margin: 30px auto 0;
+		margin: 40px auto;
 		box-shadow: 0px 3px 6px 0px rgba(13, 99, 174, 0.1);
 		box-sizing: border-box;
 		padding: 20px;
@@ -331,7 +334,7 @@
 	}	
 	/*报告头*/
 	.report_header	{
-		height: 20%;
+		height: 15%;
 		border-bottom: 1px solid #e1e1e1;
 		position: relative;
 	}
@@ -361,7 +364,7 @@
 	
 	/*基本信息*/
 	.report_info	{
-		height: 12%;
+		height: 10%;
 		border-bottom: 1px solid #e1e1e1;
 		position: relative;
 	}
@@ -374,6 +377,13 @@
 		top:50%;
 		margin-top: -29px;
 	}
+	.report_info ul:last-child{
+		margin-top: 0px;
+	}
+	.report_info ul:last-child li{
+		width: 50%;
+		padding: 5px 0;
+	}
 	.report_info ul li{
 		width: 25%;
 		padding: 5px 0;
@@ -381,7 +391,7 @@
 	
 	/*报告详情*/
 	.report_detail	{
-		height: 56%;
+		height: 65%;
 		border-bottom: 1px solid #e1e1e1;
 		padding: 15px 0;
 		box-sizing: border-box;
@@ -401,7 +411,7 @@
 	
 	/*报告尾部*/
 	.report_footer{
-		height: 12%;
+		height: 10%;
 		position: relative;
 	}
 	.report_footer	ul{

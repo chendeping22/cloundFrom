@@ -4,6 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>深圳市医学影像数据地图</title>
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"> 
 		<link rel="stylesheet" href="css/map.css" />
 		<link rel="stylesheet" href="css/swiper-4.2.0.min.css" />
 	</head>
@@ -56,28 +57,28 @@
 					<div class="locationContainer">
 						<script type="text/html" id="location">
 							{{each}}
-							{{if $value.showLevel=="80"}}
+							{{if $value.showLevel=="5"}}
 							<span class="levelOne" title="{{$value.name}}" style="{{$value.style}}">
 								<div class="container">  
 								    <div class="dot"></div>  
 								    <div class="pulse"></div>  
 								</div>  
 							</span>
-							{{else if $value.showLevel=="70"}}
+							{{else if $value.showLevel=="4"}}
 							<span class="levelTwo" title="{{$value.name}}" style="{{$value.style}}">
 								<div class="container">  
 								    <div class="dot"></div>  
 								    <div class="pulse"></div>  
 								</div>  
 							</span>
-							{{else if $value.showLevel=="60"}}
+							{{else if $value.showLevel=="3"}}
 							<span class="levelThree" title="{{$value.name}}" style="{{$value.style}}">
 								<div class="container">  
 								    <div class="dot"></div>  
 								    <div class="pulse"></div>  
 								</div>  
 							</span>
-							{{else if $value.showLevel=="50"}}
+							{{else if $value.showLevel=="2"}}
 							<span class="levelFour" title="{{$value.name}}" style="{{$value.style}}">
 								<div class="container">  
 								    <div class="dot"></div>  

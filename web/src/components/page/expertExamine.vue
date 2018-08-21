@@ -1,9 +1,9 @@
 <template>
-	<div class="container expertExamine">
-		<h1 class="top-title">专家审核：</h1>
-		<el-form :inline="true" :model="searchForm" ref="searchForm" class="demo-form-inline mb20">
+	<div class="container leader">
+		<h1 class="top-title" style="color: #a5c3ff;border-bottom: 1px solid #0f487d;">专家审核：</h1>
+		<el-form :inline="true" :model="searchForm" ref="searchForm" class="demo-form-inline">
 			
-			<el-form-item label="区域归属" prop = "area">
+			<el-form-item label="区域归属：" prop = "area">
 				<el-select v-model="searchForm.area" @change = "queryHospital" placeholder="请选择所属区域归属"  @focus.once="getDict('dict_area')">
 					<el-option label="全部" value=""></el-option>
 					<el-option :label="item.name" :value="item.value" v-for="item in areaList" :key="item.name"></el-option>  
@@ -12,7 +12,7 @@
 
 			<el-form-item label="医院名称："  prop = "hospital">
 				<el-autocomplete
-					value-key="name"
+				  value-key="name"
 				  v-model="searchForm.hospital"
 				  :fetch-suggestions="querySearch"
 				  placeholder="请输入医院名称"
@@ -29,15 +29,15 @@
 			</el-form-item>
 		</el-form>
 		
-		<el-table :data="tableData" border style="width: 100%" @row-click="rowClick">
-			<el-table-column type="index" label="序号" width="70px" align="center"></el-table-column>
+		<el-table :data="tableData" border style="width: 100%;" @row-click="rowClick">
+			<el-table-column type="index" label="序号" width="60px" align="center"></el-table-column>
 			<el-table-column prop="name" label="姓名" width = "100px" align="center"></el-table-column>
-			<el-table-column label="性别" width="70px" align="center">
+			<el-table-column label="性别" width="60px" align="center">
 				<template slot-scope="scope">
 					{{scope.row.patientSex==1?"男":"女"}}
 				</template>
 			</el-table-column>
-			<el-table-column prop="age" label="年龄" width="70px" align="center"></el-table-column>
+			<el-table-column prop="age" label="年龄" width="60px" align="center"></el-table-column>
 			<!--<el-table-column prop="username" label="手机号码" align="center"></el-table-column>-->
 			<el-table-column prop="titleName" label="职称" align="center"></el-table-column>
 			<el-table-column prop="department" label="科室" align="center"></el-table-column>
@@ -57,8 +57,10 @@
 				</template>
 			</el-table-column>
 		</el-table>
-		<el-pagination style="text-align:center;margin-top: 30px;" @current-change="handleCurrentChange" :current-page.sync="currentPage1" :page-size="10" layout="total, prev, pager, next,jumper" :total="totalNumber">
-		</el-pagination>
+		<div style="text-align:center;margin-top: 30px;">
+			<el-pagination  @current-change="handleCurrentChange" :current-page.sync="currentPage1" :page-size="10" layout="total, prev, pager, next,jumper" :total="totalNumber">
+			</el-pagination>
+		</div>
 		<div class="clear"></div>
 
 		<!--确认退回对话框-->
@@ -82,11 +84,11 @@
 		
 		<!--会诊详情对话框-->
 		<el-dialog  
-		:visible.sync="dialogIsVisible" >   
-			<div slot="title" >  
+		:visible.sync="dialogIsVisible" title="用户详细信息">   
+			<!--<div slot="title" >  
 				<span>用户详细信息</span>
 				<button type="button" aria-label="Close" class="el-dialog__headerbtn"><i class="el-dialog__close el-icon el-icon-close"></i></button>
-			</div> 
+			</div> -->
 			<div class="mes-box">
 				<el-row>
 					<el-col :span="20"> 
@@ -158,15 +160,12 @@
 		},
 		methods: {
 			searchList(page,area,hospital,name) {//搜索查询
-				
-				this.$axios.get("/cloudform-authority/authority/sysUser/searchExpert/v1.0",{
-//				this.$axios.get("http://192.168.121.91:3030/authority/sysUser/searchExpert/v1.0", {
+				this.$axios.get(this.$api.expertExamine.getExpertList,{
 				    params: {
 							page,
 							area,
 							hospital,
-							name,
-							"token":sessionStorage.getItem("loginToken")
+							name
 						}
 				}).then((res)=>{
 					console.log(res)
@@ -181,14 +180,12 @@
 			
 			},
 			getExpertList(page,area,hospital,name) {
-				this.$axios.get("/cloudform-authority/authority/sysUser/searchExpert/v1.0", {
-//				this.$axios.get("http://192.168.121.91:3030/authority/sysUser/searchExpert/v1.0", {
+				this.$axios.get(this.$api.expertExamine.getExpertList, {
 						params: {
 							page,
 							area,
 							hospital,
-							name,
-							"token":sessionStorage.getItem("loginToken")
+							name
 						}
 					}).then((res) => {
 						console.log(res)
@@ -202,7 +199,6 @@
 					})
 			},
 			resetForm(formName){//重置
-				console.log(this.$refs[formName].resetFields())
 				
 				this.$refs[formName].resetFields();
 
@@ -218,8 +214,7 @@
 			},	
 			rejectApply(username,status,remarks) {//接受或者退回专家审核
 					if(remarks!=""){
-						this.$axios.post("/cloudform-authority/authority/sysUser/review/v1.0?token="+sessionStorage.getItem("loginToken"), {
-//						this.$axios.post("http://192.168.121.91:3030/authority/sysUser/review/v1.0?token="+sessionStorage.getItem("loginToken"), {
+						this.$axios.post(this.$api.expertExamine.rejectOrPassApply, {
 								username,
 								status,
 								remarks
@@ -260,8 +255,7 @@
 					}).catch(() => {});
 			},
 			passTheApply(username,status){
-				this.$axios.post("/cloudform-authority/authority/sysUser/review/v1.0?token="+sessionStorage.getItem("loginToken"), {
-//				this.$axios.post("http://192.168.121.91:3030/authority/sysUser/review/v1.0?token="+sessionStorage.getItem("loginToken"), {
+				this.$axios.post(this.$api.expertExamine.rejectOrPassApply, {
 						username,
 						status
 					}).then((res) => {
@@ -295,7 +289,7 @@
 			queryHospital(){//获取医院
 				var area = this.searchForm.area;
 				var param = `?area=${area}&&currentPage=1`; 
-				this.$axios.get("/cloudform-statistics/formStatistics/getHospitalList/v1.0"+param)
+				this.$axios.get(this.$api.expertExamine.queryHospital+param)
 				.then(response=>{
 					console.log(response);
 					this.hospitalList=response.data.data;
@@ -303,9 +297,7 @@
 				.catch((error)=>console.log(error));
 			},
 			getDict(dict){//获取行政区
-				this.$axios
-				// .post("http://192.168.121.91:3030/authority/dictUtil/queryDictList/v1.0",
-				.post("/cloudform-authority/authority/dictUtil/queryDictList/v1.0",
+				this.$axios.post(this.$api.expertExamine.queryDictList,
 				{
 					type:dict
 				})  
@@ -341,23 +333,20 @@
 	}
 </script>
 
-<style>	
+<style scoped>	
 	/*详情对话框*/
 	.mes-box{
 		padding-left:10px; 
 	} 
-	.el-dialog__header{
-		border-bottom:1px solid #ddd;
-		background:#f8fafd;
-	}	 
+		 
 	.doctor{
 		font-size: 24px; 
-		color:#333;
+		color:#d9eeff;
 		margin-bottom:20px;
 	} 
 	.divide-b{ 
 		margin-right: 10px;
-		border-left:1px solid #0d63ee; 
+		border-left:1px solid #d9eeff; 
 
 	}
 	.sex,.age,.position,.office,.hospital{
@@ -366,16 +355,16 @@
 	.mes-num{
 		/* margin-top:20px; */
 		height:50px;
-		border-top:1px dashed #e5e5e5;
-		border-bottom:1px dashed #e5e5e5;
+		border-top:1px dashed #47759a;
+		border-bottom:1px dashed #47759a;
 	}
 	.mes-num p{
 		line-height:50px;
 		font-size:14px;
-		color:#666;
+		color:#d9eeff;
 	}
 	.num-title{
-		color:#999;
+		color:#d9eeff;
 	}
 	.num-title+span{
 		margin-right:8%;
@@ -388,11 +377,11 @@
 		float:left;
 	}
 	.headline{
-		color:#006699;
+		color:#d9eeff;
 		font-weight:bold; 
 	}
 	.content{
-		color:#666;
+		color:#d9eeff;
 		max-width:90%;
 		padding-left:5px;
 	}
@@ -406,28 +395,14 @@
 		width:70px;
 		height:90px;
 	}
-</style>
-<style>
-	/*操作提示框*/
-	/*.el-popover{
-		min-width: 100px;
-	}*/
+
 	/*搜索*/
-	.expertExamine .el-table .el-button {
+	.leader .el-table .el-button {
 		padding: 10px 5px;
 	}
 	
-	.expertExamine .el-table .el-button+.el-button{
+	.leader .el-table .el-button+.el-button{
 		margin: 0;
 	}
 	
-	/*气泡*/
-	.el-tooltip__popper.is-dark {
-	  /*border:none;
-	background: rgba(5,126,255,0.5);
-	color: #fff;*/
-	  font-size: 14px;
-	  line-height: 20px;
-	  width: 300px;
-	}
 </style>

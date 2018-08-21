@@ -1,16 +1,11 @@
 <template>
 
 	<div class="login" :style="{backgroundImage: 'url(' +bg + ')'}">
-
 		<div class="loginForm">
 
 			<el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
 				<el-tab-pane label="用户登录" name="first">
-					 <el-alert v-if="fail"
-						:title="this.notice"
-						type="error"
-						center
-						show-icon>
+					<el-alert v-if="fail" :title="this.notice" type="error" center show-icon>
 					</el-alert>
 					<el-form :label-position="labelPosition" :rules="rules1" ref="loginForm" :model="loginForm" label-width="80px">
 						<el-form-item label="用户名" prop="username">
@@ -32,19 +27,15 @@
 					</el-form>
 				</el-tab-pane>
 				<el-tab-pane label="用户注册" name="second">
-					 <el-alert v-if="codeMes"
-						:title="codeMes"
-						type="error"
-						center
-						show-icon>
+					<el-alert v-if="codeMes" :title="codeMes" type="error" center show-icon>
 					</el-alert>
 					<el-form :label-position="labelPosition" :rules="rules2" ref="registerForm" :model="registerForm" label-width="80px">
 						<el-form-item label="身份证号" prop="idCard">
 							<el-input v-model="registerForm.idCard" placeholder="请输入您的身份证号"></el-input>
 						</el-form-item>
 						<el-form-item label="手机号" prop="phoneNum">
-							<el-input  v-on:blur="changeCount()" v-model="registerForm.phoneNum" placeholder="请输入手机号码"></el-input>
-							<el-button :plain="true" @click="open">获取验证码</el-button>
+							<el-input v-blur="flag" v-on:blur="flag=false" v-model="registerForm.phoneNum" placeholder="请输入手机号码"></el-input>
+							<el-button :plain="true" :disabled="buttonStatus1" @click="getSecurityCode(registerForm.phoneNum,1)">{{buttonText1}}</el-button>
 						</el-form-item>
 						<el-form-item label="验证码" prop="securityCode">
 							<el-input v-model="registerForm.securityCode" placeholder="请输入验证码"></el-input>
@@ -54,7 +45,7 @@
 						</el-form-item>
 						<el-form-item label="确认密码" prop="password3">
 							<el-input type="password" v-model="registerForm.password3" placeholder="请再次输入密码"></el-input>
-						</el-form-item> 
+						</el-form-item>
 						<el-form-item>
 							<el-button style="width: 100%;" type="primary" @click="register('registerForm')">注册</el-button>
 						</el-form-item>
@@ -68,19 +59,15 @@
 		</div>
 		<div class="registerForm">
 			<el-dialog title="找回密码" :visible.sync="forgetPasswordFormVisible">
-				<el-alert v-if="dialogIsShow"
-						:title="this.notice2"
-						type="error"
-						center
-						show-icon>
+				<el-alert v-if="dialogIsShow" :title="this.notice2" type="error" center show-icon>
 				</el-alert>
 				<el-form :rules="rules3" ref="getPasswordform" :model="getPasswordform">
 					<el-form-item label="身份证号" prop="idCard">
 						<el-input v-model="getPasswordform.idCard" placeholder="请输入您的身份证号"></el-input>
 					</el-form-item>
 					<el-form-item label="手机号" prop="phoneNum">
-						<el-input v-blur = "flag" v-on:blur="flag=false" v-model="getPasswordform.phoneNum" placeholder="请输入手机号码"></el-input>
-						<el-button :plain="true" @click="getSecurityCode">获取验证码</el-button>
+						<el-input v-blur="flag" v-on:blur="flag=false" v-model="getPasswordform.phoneNum" placeholder="请输入手机号码"></el-input>
+						<el-button :plain="true" :disabled="buttonStatus2" @click="getSecurityCode(getPasswordform.phoneNum,2)">{{buttonText2}}</el-button>
 					</el-form-item>
 					<el-form-item label="验证码" prop="securityCode">
 						<el-input v-model="getPasswordform.securityCode" placeholder="请输入验证码"></el-input>
@@ -100,9 +87,8 @@
 	</div>
 </template>
 
-
 <script>
-	import cookieApi from '../../assets/js/cookieApi' 
+	import cookieApi from '../../assets/js/cookieApi'
 	export default {
 		data() {
 			//注册验证两次密码是否一致的全部变量
@@ -116,14 +102,14 @@
 			var checkPass2 = (rule, value, callback) => {
 				if(value !== this.getPasswordform.password2) {
 					callback(new Error('两次输入密码不一致!'));
-				} else { 
+				} else {
 					callback();
 				}
 			};
 			return {
 				labelPosition: "top",
-				notice:'',//登陆错误提示
-				notice2:'',//找回密码错误提示
+				notice: '', //登陆错误提示
+				notice2: '', //找回密码错误提示
 				loginForm: {
 					username: '',
 					password: '',
@@ -178,8 +164,8 @@
 						}
 					]
 				},
-				rules2:{
-						//用户注册
+				rules2: {
+					//用户注册
 					idCard: [ //身份证
 						{
 							required: true,
@@ -196,7 +182,7 @@
 						{
 							required: true,
 							message: '请输入手机号码',
-							trigger: 'blur' 
+							trigger: 'blur'
 						},
 						{
 							pattern: /^1[3|4|5|7|8][0-9]\d{8}$/,
@@ -236,11 +222,14 @@
 							message: '密码长度不正确',
 							trigger: 'blur'
 						},
-						{validator: checkPass1,trigger: 'blur'}
+						{
+							validator: checkPass1,
+							trigger: 'blur'
+						}
 					]
 				},
-				rules3:{
-						//用户注册
+				rules3: {
+					//用户注册
 					idCard: [ //身份证
 						{
 							required: true,
@@ -297,19 +286,26 @@
 							message: '密码长度不正确',
 							trigger: 'blur'
 						},
-						{validator: checkPass2,trigger: 'blur'}
+						{
+							validator: checkPass2,
+							trigger: 'blur'
+						}
 					]
 				},
 				activeName2: 'first',
 				rememberPassword: false,
 				forgetPasswordFormVisible: false,
 				formLabelWidth: '120px',
-				dialogIsShow:false,//找回密码错误提示
-				fail:false,//登陆错误提示
-				bg:require('../../assets/img/loginbg.jpg'),
-				codeMes:"",
-				isfocus:true,
-				flag:false
+				dialogIsShow: false, //找回密码错误提示
+				fail: false, //登陆错误提示
+				bg: require('../../assets/img/loginbg.jpg'),
+				codeMes: "",
+				isfocus: true,
+				flag: false,
+				buttonText1: "获取验证码",
+				buttonStatus1: false,
+				buttonText2: "获取验证码",
+				buttonStatus2: false
 			}
 		},
 		mounted: function() {
@@ -318,74 +314,75 @@
 		methods: {
 			login(loginForm) {
 				this.$refs[loginForm].validate((valid) => {
-					if(valid) { 
-//						this.$axios.post('http://192.168.121.91:3030/authority/login/v1.0', {username:this.loginForm.username,password:this.loginForm.password})
-						// this.$axios.post('http://192.168.121.62:8010/authority/login/v1.0', {username:this.loginForm.username,password:this.loginForm.password})
-						this.$axios.post('/cloudform-authority/authority/login/v1.0', {username:this.loginForm.username,password:this.loginForm.password})
-							.then((response)=> { 
+					if(valid) {
+						this.$axios.post(this.$api.login.login, {
+								username: this.loginForm.username,
+								password: this.loginForm.password
+							})
+							.then((response) => {
 								// console.log(response); 
 								//登录失败
-								if(response.data.code==="400"||response.data.code==="500"){ 
-									this.fail=true;
+								if(response.data.code === "400" || response.data.code === "500") {
+									this.fail = true;
 									this.notice = response.data.detailMessage;
 								}
 								//登录成功
-								if(response.data.code=="200"){
+								if(response.data.code == "200") {
 									//保存token 
 									console.log(response.data.data.hospital);
-									sessionStorage.setItem("loginToken",response.data.data.token);
-									sessionStorage.setItem("hospitalId",response.data.data.hospital); 
-									sessionStorage.setItem("userId",response.data.data.userId); 
-									sessionStorage.setItem("username",response.data.data.username);
-									sessionStorage.setItem("idcard",response.data.data.idcard);
-//									sessionStorage.setItem("currentLoginHospitalName",response.data.data.hospitalName);
-									sessionStorage.setItem("currentLoginName",response.data.data.name);
-									if(response.data.data.name!=null){ 
-										sessionStorage.setItem("name",response.data.data.name);
-									}else{ 
-										sessionStorage.setItem("name",response.data.data.username);
+									sessionStorage.setItem("loginToken", response.data.data.token);
+									sessionStorage.setItem("hospitalId", response.data.data.hospital);
+									sessionStorage.setItem("userId", response.data.data.userId);
+									sessionStorage.setItem("username", response.data.data.username);
+									sessionStorage.setItem("idcard", response.data.data.idcard);
+									//sessionStorage.setItem("currentLoginHospitalName",response.data.data.hospitalName);
+									sessionStorage.setItem("currentLoginName", response.data.data.name);
+									if(response.data.data.name != null) {
+										sessionStorage.setItem("name", response.data.data.name);
+									} else {
+										sessionStorage.setItem("name", response.data.data.username);
 									}
-									window.sessionStorage.menuList=JSON.stringify(response.data.data.roleList[0].menuList); 
+									window.sessionStorage.menuList = JSON.stringify(response.data.data.roleList[0].menuList);
 									// console.log(sessionStorage.menuList);
-									this.fail=false;  
+									this.fail = false;
 									//记住密码 
 									if(this.rememberPassword) {
 										// console.log("勾选了记住密码，现在开始写入cookie");
 										var username = this.loginForm.username;
 										var password = this.loginForm.password;
-										var accountInfo = username+"&"+password;
-										cookieApi.setCookie('accountInfo', accountInfo, 1440 * 7);//设置7天时间
+										var accountInfo = username + "&" + password;
+										cookieApi.setCookie('accountInfo', accountInfo, 1440 * 7); //设置7天时间
 										// mySelf.$router.push('/home')
 									} else {
 										// console.log("没有勾选记住密码，现在开始删除账号cookie");
 										cookieApi.delCookie('accountInfo');
-									} 
+									}
 									//角色判断
-									if(response.data.data.roleList.length!=0){ 
-										var roleId=response.data.data.roleList[0].roleId;
-										sessionStorage.setItem("roleId",roleId);
-										if(this.$route.query.redirect){
-											let redirect=this.$route.query.redirect;
+									if(response.data.data.roleList.length != 0) {
+										var roleId = response.data.data.roleList[0].roleId;
+										sessionStorage.setItem("roleId", roleId);
+										if(this.$route.query.redirect) {
+											let redirect = this.$route.query.redirect;
 											this.$router.push(redirect);
-										}else{ 
-											if(roleId===2||roleId===8){//机构管理员   
+										} else {
+											if(roleId === 2 || roleId === 8) { //机构管理员   
 												// sessionStorage.setItem("stats",'/home/dataStats2'); 
-												this.$router.push('/home/dataStats2'); 
+												this.$router.push('/home/dataStats2');
 											}
-											if(roleId===3||roleId===5){//医生或者专家
-												this.$router.push('/home/consultationList'); 
+											if(roleId === 3 || roleId === 5) { //医生或者专家
+												this.$router.push('/home/consultationList');
 											}
-											if(roleId===4){ //卫计委 
+											if(roleId === 4) { //卫计委 
 												// sessionStorage.setItem("stats",'/home/dataStats'); 
 												// this.$router.push('/home/dataStats'); 
-												this.$router.push('/home/map'); 
+												this.$router.push('/home/map');
 											}
-											if(roleId==6){//患者个人
+											if(roleId == 6) { //患者个人
 												this.$router.push('/home/cloudFilm');
 											}
-										}						
-									} 
-								} 
+										}
+									}
+								}
 							})
 							.catch(function(error) {
 								console.log(error);
@@ -403,46 +400,44 @@
 				this.$refs[registerForm].validate((valid) => {
 					if(valid) {
 						//验证码验证
-						this.$axios.post('/cloudform-authority/authority/checkVerificationCode/v1.0',{
-							 username:this.registerForm.phoneNum, 
-							 code:this.registerForm.securityCode
-						 }).then((response)=>{
+						this.$axios.post(this.$api.login.checkVerificationCode, {
+							username: this.registerForm.phoneNum,
+							code: this.registerForm.securityCode
+						}).then((response) => {
 							//  console.log( response);
-							 if(response.data.code=="200"){
-								 this.codeMes="";
-								  this.$axios.post('/cloudform-authority/authority/sysUser/save/v1.0',{
-									 username:this.registerForm.phoneNum, 
-									 password:this.registerForm.password2,  
-									 idcard:this.registerForm.idCard,  //身份证
-									 roleList:[{
-										 roleId:6
-									 }]
-								 }).then((response)=>{
+							if(response.data.code == "200") {
+								this.codeMes = "";
+								this.$axios.post(this.$api.login.register, {
+									username: this.registerForm.phoneNum,
+									password: this.registerForm.password2,
+									idcard: this.registerForm.idCard, //身份证
+									roleList: [{
+										roleId: 6
+									}]
+								}).then((response) => {
 									//  console.log( response);
-									 //注册成功
-									 if(response.data.code=="400"){
-										  this.codeMes=response.data.detailMessage;
-									  } 
-									 if(response.data.code=="200"){ 
-										 this.codeMes="";
+									//注册成功
+									if(response.data.code !== "200") {
+										this.codeMes = response.data.detailMessage;
+									} else {
+										this.codeMes = "";
 										this.$alert('恭喜您，账号注册成功，赶快登录吧！', '注册成功', {
 											confirmButtonText: '确定',
 											callback: action => {
-												this.activeName2="first";
+												this.activeName2 = "first";
 											}
 										});
-									 }
-								 }).catch(function(error) {
-										console.log(error);
+									}
+								}).catch(function(error) {
+									console.log(error);
 								});
-							 }else if(response.data.code=="500"){
-								 this.codeMes=response.data.message;
-							 }
-						 }).catch(function(error) {
-								console.log(error);
-							});
+							} else if(response.data.code == "500") {
+								this.codeMes = response.data.message;
+							}
+						}).catch(function(error) {
+							console.log(error);
+						});
 
-						
 					} else {
 						// console.log('error submit!!');
 						return false;
@@ -451,50 +446,48 @@
 				console.log('注册!');
 
 			},
-			onSubmit3(getPasswordform) {//找回密码
+			onSubmit3(getPasswordform) { //找回密码
 				this.$refs[getPasswordform].validate((valid) => {
 					if(valid) {
 						//验证码验证
-						this.$axios.post('/cloudform-authority/authority/checkVerificationCode/v1.0',{
-							 username:this.getPasswordform.phoneNum, 
-							 code:this.getPasswordform.securityCode
-						 }).then((response)=>{
-							//  console.log( response);
-							 if(response.data.code=="200"){
-								 this.dialogIsShow=false;
-								  this.$axios.post('/cloudform-authority/authority/resetPassword/v1.0',{
-									 username:this.getPasswordform.phoneNum, 
-									 password:this.getPasswordform.password2,  
-									 idcard:this.getPasswordform.idCard//身份证
-								 }).then((response)=>{
+						this.$axios.post(this.$api.login.checkVerificationCode, {
+							username: this.getPasswordform.phoneNum,
+							code: this.getPasswordform.securityCode
+						}).then((response) => {
+							if(response.data.code == "200") {
+								this.dialogIsShow = false;
+								this.$axios.post(this.$api.login.resetPassword, {
+									username: this.getPasswordform.phoneNum,
+									password: this.getPasswordform.password2,
+									idcard: this.getPasswordform.idCard //身份证
+								}).then((response) => {
 									//  console.log(response);
-									 //找回密码成功
-									 if(response.data.code=="200"){ 
-										this.dialogIsShow=false;
+									//找回密码成功
+									if(response.data.code == "200") {
+										this.dialogIsShow = false;
 										this.$alert('密码找回成功', '提示消息：', {
 											confirmButtonText: '确定',
-											type:"success",
-											callback:function(){
+											type: "success",
+											callback: function() {
 												forgetPasswordFormVisible: false;
 											}
 										});
-									 }else{
-									 	this.dialogIsShow=true;
-									 	this.notice2=response.data.message;
-									 }
-								 }).catch(function(error) {
-										console.log(error);
+									} else {
+										this.dialogIsShow = true;
+										this.notice2 = response.data.detailMessage;
+									}
+								}).catch(function(error) {
+									console.log(error);
 								});
-							 }else{
-							 	 this.dialogIsShow=true;
-								 this.notice2=response.data.message;
-							 }
-						 }).catch(function(error) {
-								console.log(error);
-							});
-						
+							} else {
+								this.dialogIsShow = true;
+								this.notice2 = response.data.message;
+							}
+						}).catch(function(error) {
+							console.log(error);
+						});
+
 					} else {
-						// console.log('error submit!!');
 						return false;
 					}
 				});
@@ -502,9 +495,6 @@
 			},
 			handleClick(tab, event) {
 				console.log(tab, event);
-			},
-			changeCount(){
-				this.isfocus=false;
 			},
 			open4() {
 				const h = this.$createElement;
@@ -540,47 +530,57 @@
 					});
 				});
 			},
-			getSecurityCode() {  
-				let regex=/^1[3|4|5|7|8][0-9]\d{8}$/;
-				if(regex.test(this.getPasswordform.phoneNum)){ 
-						this.$axios.post('/cloudform-authority/authority/sendVerificationCode/v1.0',{ 
-							username:this.getPasswordform.phoneNum,  
-						}).then((response)=>{
-							// console.log( response);
-							if(response.data.code=="200"){ 
-								this.$message({message:'获取验证码成功！',type:"success"}); 
-							} 
-						}).catch(function(error) {
-							console.log(error);
-						}); 
-				}else if(this.getPasswordform.phoneNum==""){
-					 this.flag=true;
+			getSecurityCode(username, type) { //获取验证码
+				let regex = /^1[3|4|5|7|8][0-9]\d{8}$/;
+				if(regex.test(username)) {
+					this.$axios.post(this.$api.login.sendVerificationCode, {
+						username
+					}).then((response) => {
+						if(response.data.code == "200") {
+							this.setTime(type);
+							this.$message({
+								message: '获取验证码成功！',
+								type: "success"
+							});
+						}
+					}).catch(function(error) {
+						console.log(error);
+					});
+				} else if(username == "") {
+					this.flag = true;
 				}
 			},
-			open() {  //获取用户注册验证码
-				let regex=/^1[3|4|5|7|8][0-9]\d{8}$/;
-				let phone=document.getElementById('phone');
-				// console.log(this.isfocus);
-				// console.log(this.registerForm.phoneNum); 
-				// console.log(this.registerForm.phoneNum==""&&phone!=document.activeElement)
-				if(this.registerForm.phoneNum!=""&&regex.test(this.registerForm.phoneNum)){ 
-						this.$axios.post('/cloudform-authority/authority/sendVerificationCode/v1.0',{ 
-							username:this.registerForm.phoneNum,  
-						}).then((response)=>{
-							// console.log( response);
-							if(response.data.code=="200"){ 
-								this.$message({message:'获取验证码成功！',type:"success"}); 
-							} 
-						}).catch(function(error) {
-							console.log(error);
-						}); 
-				// this.$message('请输入手机号码！'); 
-				// }else if()){
-				// 	// this.$message('手机号码格式不正确！');  
-				// }else{
-				}else if(this.registerForm.phoneNum==""&&this.isfocus){
-					this.$message('请输入手机号码！'); 
+			setTime(type) { //重新获取验证码
+				if(type == 1) {
+					let countdown = 60;
+					this.buttonStatus1 = true;
+					this.buttonText1 = `${countdown}秒后重新获取`;
+					var myself = this;
+					let interval = setInterval(function() {
+						countdown--;
+						myself.buttonText1 = `${countdown}秒后重新获取`;
+						if(countdown <= 0) {
+							clearInterval(interval);
+							myself.buttonStatus1 = false;
+							myself.buttonText1 = `获取验证码`;
+						}
+					}, 1000)
+				} else {
+					let countdown = 60;
+					this.buttonStatus2 = true;
+					this.buttonText2 = `${countdown}秒后重新获取`;
+					var myself = this;
+					let interval = setInterval(function() {
+						countdown--;
+						myself.buttonText2 = `${countdown}秒后重新获取`;
+						if(countdown <= 0) {
+							clearInterval(interval);
+							myself.buttonStatus2 = false;
+							myself.buttonText2 = `获取验证码`;
+						}
+					}, 1000)
 				}
+
 			},
 			doRememberPassword() {
 				console.log(this.rememberPassword)
@@ -601,8 +601,8 @@
 					let index = accountInfo.indexOf("&");
 
 					userName = accountInfo.substring(0, index);
-					passWord = accountInfo.substring(index + 1);		
-					
+					passWord = accountInfo.substring(index + 1);
+
 					mySelf.loginForm.username = userName;
 					mySelf.loginForm.password = passWord;
 					mySelf.rememberPassword = true;
@@ -616,8 +616,8 @@
 	.login {
 		width: 100%;
 		height: 100%;
-		/* background: url('+bg+') no-repeat; */
 		background-size: cover;
+		overflow: hidden;
 	}
 	
 	.login .img {
@@ -671,6 +671,14 @@
 		margin-top: 18px;
 	}
 	
+	.loginForm .el-button--primary:focus,
+	.loginForm .el-button--primary:hover,
+	.registerForm .el-button--primary:focus,
+	.registerForm .el-button--primary:hover {
+		background: #0d63ae;
+		border-color: #0d63ae;
+	}
+	
 	.loginForm .el-button--primary:active,
 	.registerForm .el-button--primary:active {
 		outline: 0;
@@ -693,12 +701,11 @@
 		padding: 0px 30px;
 		font-size: 16px;
 	}
+	
 	.loginForm .el-tabs--card>.el-tabs__header .el-tabs__item:hover,
-	.loginForm .el-tabs--card>.el-tabs__header .el-tabs__item.is-active
-	 {
+	.loginForm .el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
 		color: #0d63ae;
 	}
-	
 	
 	.loginForm .el-tabs__item::after {
 		content: "";
@@ -751,7 +758,7 @@
 	.login .loginForm .el-checkbox__inner {
 		border-color: #606266;
 		border-radius: 50%;
-		zoom: 1.4;
+		zoom: 1.2;
 	}
 	
 	.login .loginForm .is-checked .el-checkbox__inner {

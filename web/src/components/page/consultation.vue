@@ -69,7 +69,7 @@
 										<el-input v-model="queryForm.name"></el-input>
 									</el-form-item>
 									<el-form-item>
-										<el-button type="primary" @click="onSubmit(1)">查询</el-button>
+										<el-button type="primary" @click="searchDoctor(1)">查询</el-button>
 										<el-button @click="resetForm('queryForm')">重置</el-button>
 									</el-form-item>
 							</el-form>
@@ -135,12 +135,12 @@
 		mounted() {
        		this.localpid = this.$route.query.localpid;
        		this.getPatientInfo(this.localpid);
-       		this.onSubmit(1);//默认查询第一页
+       		this.searchDoctor(1);//默认查询第一页
 		},
 		methods: {
-			onSubmit(num) {//查询医生列表
-//				this.$axios.post("http://192.168.121.91:2020/consultation/searchDoctor/v1.0?token="+sessionStorage.getItem("loginToken"), {
-				this.$axios.post("/cloudform-imgconsultation/consultation/searchDoctor/v1.0?token="+sessionStorage.getItem("loginToken"), {
+			searchDoctor(num) {//查询医生列表
+//				this.$axios.post("http://192.168.121.91:2020/consultation/searchDoctor/v1.0", {
+				this.$axios.post(this.$api.consultation.searchDoctor, {
 					  "userId":sessionStorage.getItem("userId"),
 					  "userType":sessionStorage.getItem("roleId"),
 			          "hospital":this.queryForm.hospital==""?sessionStorage.getItem("hospitalId"):this.queryForm.hospital,
@@ -157,7 +157,7 @@
 			},
 			resetForm(formName){//重置
 				this.$refs[formName].resetFields();
-				this.onSubmit(1);//默认查询第一页
+				this.searchDoctor(1);//默认查询第一页
 			},
 			makesureMakeConsulation(){//确定发起会诊
 				if(this.receiveDoctorId != ""){
@@ -166,7 +166,7 @@
 			          cancelButtonText: '取消',
 			          type: 'warning'
 			        }).then(() => {
-			        	this.handleMake();
+			        	this.makeConsultation();
 			        }).catch(() => {});
 				}else{
 					this.$alert("请选择接收会诊医生", '发起失败：', {
@@ -176,9 +176,8 @@
 				}
 
 			},
-			handleMake() { //发起会诊
-				this.$axios.post("/cloudform-imgconsultation/consultation/makeConsultation/v1.0?token="+sessionStorage.getItem("loginToken"), {
-//				this.$axios.post("http://192.168.121.91:2020/consultation/makeConsultation/v1.0?token="+sessionStorage.getItem("loginToken"), {
+			makeConsultation() { //发起会诊
+				this.$axios.post(this.$api.consultation.makeConsultation, {
 					  "sendDoctorId":sessionStorage.getItem("userId"),
 					  "receiveDoctorId":this.receiveDoctorId,
 			          "localpid":this.localPid,
@@ -192,7 +191,7 @@
 								type:"success",
 								callback: action => {
 									window.close();
-									window.opener.location.replace(window.location.href.split("/#")[0]+"/#/home/myPatient/"+new Date().getTime());
+									window.opener.location.replace(window.location.href.split("#")[0]+"#/home/myPatient/"+new Date().getTime());
 								}
 							});
 						}else{
@@ -211,11 +210,9 @@
 				window.close();
 			},
 			getPatientInfo(localpid) {
-				this.$axios.get("/cloudform-imgconsultation/consultation/getPatientInfo/v1.0", {
-//				this.$axios.get("http://192.168.121.91:2020/consultation/getPatientInfo/v1.0", {
+				this.$axios.get(this.$api.consultation.getPatientInfo, {
 						params: {
-							"localpid": localpid,
-							"token":sessionStorage.getItem("loginToken")
+							"localpid": localpid
 						}
 					}).then((res) => {
 						this.data = res.data;
@@ -225,12 +222,10 @@
 					})
 			},
 			getHospital(){
-				this.$axios.get("/cloudform-imgconsultation/consultation/getHospital/v1.0", {
-//				this.$axios.get("http://192.168.121.91:2020/consultation/getHospital/v1.0", {
+				this.$axios.get(this.$api.consultation.getHospital, {
 						params: {
 							"userType":sessionStorage.getItem("roleId"),
-							"hospitalId":sessionStorage.getItem("hospitalId"),
-							"token":sessionStorage.getItem("loginToken")
+							"hospitalId":sessionStorage.getItem("hospitalId")
 						}
 					}).then((res) => {
 						console.log(res)
@@ -243,12 +238,7 @@
 				
 			},
 			getDepartment(){
-				this.$axios.get("/cloudform-authority/authority/dictUtil/queryConsultationDict/v1.0", { 
-//				this.$axios.get("http://192.168.121.91:3030/authority/dictUtil/queryConsultationDict/v1.0", {
-						params: {
-							"token":sessionStorage.getItem("loginToken")
-						}
-					}).then((res) => {
+				this.$axios.get(this.$api.consultation.getDepartment).then((res) => {
 						this.department = res.data;
 						console.log(this.department)
 					})
@@ -257,7 +247,7 @@
 					});	
 			},
 			handleCurrentChange(val) { //点击上下页回调
-				this.onSubmit(val);
+				this.searchDoctor(val);
 			},
 			chooseDoctor(userId,name){//点击医生列表选中医生
 				this.elCardIsActive = userId;
@@ -265,7 +255,7 @@
 				this.receiveDoctorId = userId;
 			},
 			pacsView(studyUid){//阅片
-				var url  = "http://122.13.3.102:18000/clinicWebPacsViewPc/index.html#"+studyUid
+				var url  = this.$api.pacsView+studyUid;
 				window.open(url,"_blank")
 			}
 		}
@@ -336,16 +326,15 @@
 		top: 60px;
 		left: 0;
 		right: 0;
-		bottom: 0;
+		bottom: 60px;
 		overflow: auto;
-		padding-bottom: 60px;
 	}
 	
 	.cons {
 		width: 80%;
 		height: 800px;
 		background: #fff;
-		margin: 40px auto 0;
+		margin: 40px auto;
 		box-shadow: 0px 3px 6px 0px rgba(13, 99, 174, 0.1);
 		box-sizing: border-box;
 		padding: 30px 20px;

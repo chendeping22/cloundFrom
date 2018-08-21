@@ -2,13 +2,13 @@
 
 	<div>
 		<div class="index_header">
-			<img src="../../assets/img/lw-logo.png" /><span>蓝网影像云平台</span>
+			<img src="../../assets/img/lw-logo.png" /><span>医疗影像云平台</span>
 			<a @click.prevent="loginRouter">登录/注册</a>
 		</div>
 		<el-carousel height="600px" trigger="click" :interval="4000">
 			<el-carousel-item height="700px">
 				<div class="slogan slogan3" :style="{backgroundImage: 'url(' +bg3+ ')'}">
-					<h1>政企合作 资源整合</h1>
+					<h1>创新便民、资源共享</h1>
 					<h6>助推优质医疗资源下沉、互联共享信息，创新医疗影像服务新模式</h6>
 				</div>
 			</el-carousel-item>
@@ -26,18 +26,38 @@
 			</el-carousel-item>
 
 		</el-carousel>
-		<h1 class="experts"><span>专家团队</span></h1>
+		<h1 class="experts"><span>专家介绍</span></h1>
 
 		<el-carousel height="480px" trigger="click" arrow="always" class="doctor-container" :autoplay="false">
 			<el-carousel-item v-for = "(items,index) in expertList" :key = "index">
 				<div class="doctor">
-					<ul v-for="item in items" :key = "item.idcard">
+					<!--<ul v-for="item in items" :key = "item.idcard" @mouseenter = "openDetailCard"  @mouseleave = "closeDetailCard">
 						<li class="doctor-img"><img src="../../assets/img/icon-doctor.png" /></li>
 						<li class="doctor-info">
 							<strong>{{item.name}}</strong><i>{{item.titleName}}</i>
 							<p>{{item.hospitalName}}<span>{{item.department}}</span></p>
 						</li>
-					</ul>
+					</ul>-->
+					<el-popover
+					  placement="top"
+					  width="400"
+					  trigger="hover"
+					  content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+					  v-for="item in items" :key = "item.idcard">
+					  <p class="title">简介</p>
+					  <p class="detail">{{item.synopsis}}</p>
+					  <p class="title">擅长</p>
+					  <p class="detail">{{item.beGoodAt}}</p>
+					  <ul slot="reference">
+						<li class="doctor-img"><img src="../../assets/img/icon-doctor.png" /></li>
+						<li class="doctor-info">
+							<strong>{{item.name}}</strong><i>{{item.titleName}}</i>
+							<p>{{item.hospitalName}}<span>{{item.department}}</span></p>
+						</li>
+					  </ul>
+					  <!--<el-button slot="reference">hover 激活</el-button>-->
+					</el-popover>
+					
 				</div>
 			</el-carousel-item>
 		</el-carousel>
@@ -52,12 +72,12 @@
 				<li><strong>56</strong><span>技术专利</span></li>
 			</ul>
 		</div>
-		<div class="link-box"> 
+		<!--<div class="link-box"> 
 			<el-row>
-				<el-col :span="12"><div class="link"><a href="http://122.13.2.38:8008/cloudForm/fullScreen/" target="_blank" > 蓝网医学影像数据分析</a>  </div></el-col>
-				<el-col :span="12"><div class="link"><a href="http://122.13.2.38:8008/cloudForm/fullScreen/map.html" target="_blank">深圳市医学影像数据地图</a></div></el-col>
+				<el-col :span="12"><div class="link"><a href="http://123.207.247.110/fullScreen/" target="_blank" > 蓝网医学影像数据分析</a>  </div></el-col>
+				<el-col :span="12"><div class="link"><a href="http://123.207.247.110/fullScreen/map.html" target="_blank">深圳市医学影像数据地图</a></div></el-col>
 			</el-row>
-		</div>
+		</div>-->
 
 		<div class="foot">
 			Copyright © 2018 Lanwon. All Rights Reserved.粤ICP备13079203号
@@ -89,8 +109,7 @@
 				this.$router.push("./login")
 			},
 			getEepertList() {
-//				this.$axios.get("http://192.168.121.91:3030/authority/sysUser/queryExpert/v1.0")
-				this.$axios.get("/cloudform-authority/authority/sysUser/queryExpert/v1.0")
+				this.$axios.get(this.$api.index.getEepertList)
 					.then(res => {
 						if(res.data.code == 200) {
 							this.expertList = this.sliceArray(res.data.data,4);
@@ -107,6 +126,12 @@
 					result.push(array.slice(start, end));
 				}
 				return result;
+			},
+			openDetailCard(){
+				console.log("开启")
+			},
+			closeDetailCard(){
+				console.log("关闭")
 			}
 		}
 	}
@@ -181,9 +206,28 @@
 		margin: auto;
 		height: 400px;
 	}
-	
+	/*医生详情*/
+	.el-popover .title{
+		font-weight: 700;
+		margin: 2px 0;
+		color: white;
+		width: 30px;
+		height: 30px;
+		text-align: center;
+		line-height: 30px;
+		background:#057eff;
+		border: 1px solid #057eff;
+		border-radius: 50%;
+	}
+	.el-popover .detail{
+		text-indent:2em;
+		/*margin: 0 20px;*/
+		padding: 5px;
+		border-radius: 2px;
+		/*color: white;*/
+	}
 	.doctor ul {
-		height: 240px;
+		height: 200px;
 		width: 50%;
 		float: left;
 	}
@@ -297,10 +341,10 @@
 		padding: 20px 0;
 		border-top: 1px solid #e9f0f5;
 	}
-	.link-box{
+	/*.link-box{
 		width:1000px;
 		margin:80px auto 10px;
-	}
+	}*/
 	.link{
 		font-size:18px;
 		text-align: center;
@@ -311,8 +355,14 @@
 </style>
 <style>
 	/*分页器颜色*/
-	
 	.doctor-container .el-carousel__button {
 		background-color: #057eff;
 	}
+	
+	/*.el-popover{
+		border: 1px solid #477cee5c;
+	}
+	.el-popover[x-placement ^= top] .popper__arrow{
+		border-top-color:#477cee5c;
+	}*/
 </style>
